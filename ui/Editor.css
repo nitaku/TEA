@@ -1,0 +1,13 @@
+.Editor .error_gutter {
+  width: 12px;
+}
+
+.Editor {
+  display: flex;
+  flex-direction: column;
+}
+
+.Editor .CodeMirror {
+  flex-grow: 1;
+  height: 0;
+}

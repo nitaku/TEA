@@ -11,11 +11,7 @@ body {
   flex-direction: row;
 }
 
-#editor {
-  flex-grow: 1;
-  width: 0;
-}
-#graph_view {
+body > * {
   flex-grow: 1;
   width: 0;
 }

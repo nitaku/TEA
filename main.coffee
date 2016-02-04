@@ -15,3 +15,7 @@ ___
 
 # example of bad update
 doc.update 'dfdf<<<<'
+
+editor = new Editor
+  el: '#editor'
+  model: doc
