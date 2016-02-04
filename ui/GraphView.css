@@ -1,0 +1,67 @@
+.GraphView .node circle {
+  stroke-width: 2;
+}
+
+.GraphView .link {
+  fill: none;
+  stroke: #CCC;
+  stroke-width: 4px;
+  marker-end: url(#end-arrow);
+}
+.GraphView #end-arrow {
+  fill: #CCC;
+}
+
+.GraphView .label {
+  font-family: monospace;
+  font-size: 12px;
+  text-anchor: middle;
+  fill: #333;
+  stroke: none;
+  font-weight: bold;
+  text-shadow: -1px -1px #EEE, -1px 1px #EEE, 1px 1px #EEE, 1px -1px #EEE, -1px 0 #EEE, 0 1px #EEE, 1px 0 #EEE, 0 -1px #EEE;
+  pointer-events: none;
+}
+.GraphView a.valid .label {
+  pointer-events: all;
+}
+.GraphView a.valid:hover .label {
+  text-decoration: underline;
+}
+
+.GraphView .link_label {
+  font-family: sans-serif;
+  font-size: 9px;
+  text-anchor: middle;
+  fill: #AAA;
+  stroke: none;
+  text-shadow: -1px -1px #EEE, -1px 1px #EEE, 1px 1px #EEE, 1px -1px #EEE, -1px 0 #EEE, 0 1px #EEE, 1px 0 #EEE, 0 -1px #EEE;
+  pointer-events: none;
+}
+
+.GraphView .ne_link {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.GraphView .content.node {
+  fill: white;
+  stroke: #777;
+}
+.GraphView .span.node {
+  fill: #B9DBF3;
+  stroke: #1f77b4;
+}
+.GraphView .span.node .label {
+  fill: #1f77b4;
+}
+.GraphView .entity.node {
+  fill: #FFD7B3;
+  stroke: #ff7f0e;
+}
+.GraphView .entity.node .label {
+  fill: #ff7f0e;
+}
+.GraphView .external.node {
+  fill: #EEE;
+  stroke: #999;
+}

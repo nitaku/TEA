@@ -1,7 +1,7 @@
 Document = Backbone.Model.extend
   defaults:
     code: ''
-    graph: 0
+    graph: null
 
   initialize: () ->
     language = '''
@@ -225,7 +225,35 @@ Document = Backbone.Model.extend
             a.directives.push d
 
       # update the graph
+      content = {type: 'content'}
+      nodes = [content]
+      links = []
+      graph = {nodes: nodes, links: links}
+      entity_index = {}
+
+      @directives.forEach (d) ->
+        if d.id not of entity_index
+          n = {type: 'entity', id: d.id}
+          nodes.push n
+          entity_index[d.id] = n
+        else
+          n = entity_index[d.id]
+
+        d.popairs.forEach (p) ->
+          ext_n = {type: 'external', id: p.object}
+          nodes.push ext_n
+
+          links.push {source: n, target: ext_n, type: 'predicate', predicate: p.predicate}
+
+      @annotations.forEach (a, i) ->
+        n = {type: 'span', id: i}
+        nodes.push n
+
+        links.push {source: content, target: n, start: a.start, end: a.end, type: 'locus', inverted: true}
+
+        links.push {source: n, target: entity_index[a.id], type: 'about'}
+
       @set
-        graph: 1
+        graph: graph
     catch error
       console.debug error

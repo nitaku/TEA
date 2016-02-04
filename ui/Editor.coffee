@@ -2,7 +2,7 @@ Editor = Backbone.D3View.extend
   initialize: () ->
     @d3el.classed 'Editor', true
 
-    # define highlighing regexp      
+    # define highlighing regexp
     CodeMirror.defineSimpleMode('mtss', {
       start: [
         {regex: new RegExp('(\\<)([^\\>]*)(\\>)(\\()([^\\)]*)(\\))'), token: ['span_symbol','span_text','span_symbol','entity_symbol','entity_id','entity_symbol']},
@@ -22,5 +22,4 @@ Editor = Backbone.D3View.extend
       gutters: ['error_gutter']
     }
 
-    # 
-    editor.on 'change', () -> @model.update editor.getValue()
+    editor.on 'change', () => @model.update editor.getValue()
