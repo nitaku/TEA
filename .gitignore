@@ -4,5 +4,5 @@ node_modules
 */*.js
 */*.js.map
 !lib/*
+lib/libs.js
 app.src.coffee
-
