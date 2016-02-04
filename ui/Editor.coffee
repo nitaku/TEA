@@ -2,7 +2,7 @@ Editor = Backbone.D3View.extend
   initialize: () ->
     @d3el.classed 'Editor', true
 
-    # define highlighing regexp
+    # define highlighting regexp
     CodeMirror.defineSimpleMode('mtss', {
       start: [
         {regex: new RegExp('(\\<)([^\\>]*)(\\>)(\\()([^\\)]*)(\\))'), token: ['span_symbol','span_text','span_symbol','entity_symbol','entity_id','entity_symbol']},
@@ -15,11 +15,22 @@ Editor = Backbone.D3View.extend
     })
 
     # create the CodeMirror editor
-    editor = CodeMirror @el, {
+    # Chrome bug workaround (https://github.com/codemirror/CodeMirror/issues/3679)
+    @d3el
+      .style
+        position: 'relative'
+    wrapper = @d3el.append 'div'
+      .style
+        position: 'absolute'
+        height: '100%'
+        width: '100%'
+
+    editor = CodeMirror wrapper.node(), {
       mode: 'mtss',
       lineNumbers: false,
       lineWrapping: true,
       gutters: ['error_gutter']
     }
 
-    editor.on 'change', () => @model.update editor.getValue()
+    editor.on 'change', () =>
+      @model.update editor.getValue()

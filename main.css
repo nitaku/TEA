@@ -15,3 +15,8 @@ body > * {
   flex-grow: 1;
   width: 0;
 }
+
+#editor {
+  box-sizing: border-box;
+  border-right: 2px solid gray;
+}

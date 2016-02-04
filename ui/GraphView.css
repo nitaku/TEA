@@ -1,3 +1,7 @@
+.GraphView {
+  background: #EEE;
+}
+
 .GraphView .node circle {
   stroke-width: 2;
 }
