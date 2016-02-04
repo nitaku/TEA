@@ -5,7 +5,7 @@ module.exports = (grunt) ->
         src: ['lib/d3.v3.min.js', 'lib/lodash.min.js', 'lib/backbone-min.js', 'lib/backbone.d3view.js']
         dest: 'lib/libs.js'
     coffee:
-      compileJoined:
+      compile:
         options:
           join: true
           sourceMap: true
@@ -22,7 +22,8 @@ module.exports = (grunt) ->
       ]
       tasks:
         [
-          'coffee'
+          'coffee',
+          'concat'
         ]
 
   grunt.loadNpmTasks 'grunt-contrib-concat'
