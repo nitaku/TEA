@@ -35,16 +35,6 @@ Editor = Backbone.D3View.extend
     editor.on 'change', () =>
       @model.update editor.getValue()
 
-    # span highlighting
-    ###@span_textmarks = []
-
-    @listenTo @model, 'span', () ->
-      for textmark in @span_textmarks
-        textmark.clear()
-
-      for span in @model.span
-        @span_textmarks.push editor.markText {line: span.code_line, ch: span.code_start}, {line: span.code_line, ch: span.code_end}, {className: 'span'}###
-
     # annotation highlighting
     @annotation_textmarks = []
 
@@ -52,5 +42,7 @@ Editor = Backbone.D3View.extend
       for textmark in @annotation_textmarks
         textmark.clear()
 
-      for annotation in @model.annotations        
-        @annotation_textmarks.push editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line, ch: annotation.code_end}, {className: annotation.type}
+      for annotation in @model.annotations
+        newline_matches = if annotation.content.match(/\n/g) then annotation.content.match(/\n/g).length else 0
+
+        @annotation_textmarks.push editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line+newline_matches, ch: annotation.code_end}, {className: 'annotation'}

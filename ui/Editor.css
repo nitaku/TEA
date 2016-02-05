@@ -16,10 +16,7 @@
   height: 100%;
 }
 
-.span {
-  color: red;
-}
-
 .annotation {
-  color: green;
+  color: #ff7f0e;
+  font-weight: bold;
 }
