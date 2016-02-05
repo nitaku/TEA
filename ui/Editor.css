@@ -17,6 +17,13 @@
 }
 
 .annotation {
+  background: rgba(31,118,180,0.1);
+}
+.square_bracket {
+  font-weight: bold;
+  color: rgba(31,118,180,1);
+}
+.round_bracket {
   color: #ff7f0e;
   font-weight: bold;
 }
