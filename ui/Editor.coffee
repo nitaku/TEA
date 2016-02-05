@@ -14,7 +14,6 @@ Editor = Backbone.D3View.extend
       ]
     })
 
-    # create the CodeMirror editor
     # Chrome bug workaround (https://github.com/codemirror/CodeMirror/issues/3679)
     @d3el
       .style
@@ -25,6 +24,7 @@ Editor = Backbone.D3View.extend
         height: '100%'
         width: '100%'
 
+    # create the CodeMirror editor
     editor = CodeMirror wrapper.node(), {
       mode: 'mtss',
       lineNumbers: false,
@@ -32,16 +32,15 @@ Editor = Backbone.D3View.extend
       gutters: ['error_gutter']
     }
 
-    @textmarks = []
-    @listenTo @model, 'annotation', () ->
-      for textmark in @textmarks
-        textmark.clear()
-        
-      for annotation in @model.annotations
-        console.log annotation
-        
-        textmark = editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line, ch: annotation.code_end}, {className: 'annotation'}
-        @textmarks.push textmark
-
     editor.on 'change', () =>
       @model.update editor.getValue()
+
+    # annotation highlighting
+    @annotation_textmarks = []
+
+    @listenTo @model, 'annotation', () ->
+      for textmark in @annotation_textmarks
+        textmark.clear()
+
+      for annotation in @model.annotations        
+        @annotation_textmarks.push editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line, ch: annotation.code_end}, {className: 'annotation'}
