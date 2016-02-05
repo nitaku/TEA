@@ -12,7 +12,7 @@ body {
 }
 
 #navigator {
-  width: 120px;
+  width: 80px;
   box-sizing: border-box;
   border-right: 2px solid gray;
 }
