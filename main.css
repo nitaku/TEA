@@ -11,12 +11,18 @@ body {
   flex-direction: row;
 }
 
-body > * {
-  flex-grow: 1;
-  width: 0;
-}
-
-#editor {
+#navigator {
+  width: 120px;
   box-sizing: border-box;
   border-right: 2px solid gray;
+}
+#editor {
+  flex-grow: 1;
+  width: 0;
+  box-sizing: border-box;
+  border-right: 2px solid gray;
+}
+#graph_view {
+  flex-grow: 1;
+  width: 0;
 }
