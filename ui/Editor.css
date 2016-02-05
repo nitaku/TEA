@@ -15,3 +15,11 @@
 .Editor .CodeMirror {
   height: 100%;
 }
+
+.span {
+  color: red;
+}
+
+.annotation {
+  color: green;
+}
