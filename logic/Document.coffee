@@ -134,6 +134,10 @@ Document = Backbone.Model.extend
           { yy.on_directive($6, $3); }
         | SpacesOrNothing '[' Id ']' SpacesOrNothing POSequence SpacesOrNothing
           { yy.on_directive($6, $3); }
+        | SpacesOrNothing '(' Id ')'
+          { yy.on_directive([], $3); }
+        | SpacesOrNothing '[' Id ']'
+          { yy.on_directive([], $3); }
         | SpacesOrNothing
         ;
 
