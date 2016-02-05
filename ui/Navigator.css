@@ -1,0 +1,44 @@
+.Navigator {
+  background: #BBB;
+}
+
+.Navigator .item {
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #444;
+  padding: 6px;
+  cursor: pointer;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+
+  border: 2px solid transparent;
+
+  /* trick for displaying the selected item */
+  position: relative;
+  left: 3px;
+}
+
+.Navigator .item:hover {
+  color: black;
+}
+
+.Navigator .item.selected {
+  border: 2px solid gray;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  font-weight: bold;
+
+  /* trick for displaying the selected item */
+  background: #F7F7F7;
+  border-right: 2px solid #F7F7F7;
+}
+
+.Navigator .item:first-child {
+  margin-top: 4px;
+}
