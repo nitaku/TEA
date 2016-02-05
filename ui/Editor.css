@@ -16,6 +16,10 @@
   height: 100%;
 }
 
-.annotation {
+.span {
   color: red;
+}
+
+.annotation {
+  color: green;
 }

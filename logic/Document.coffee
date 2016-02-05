@@ -37,7 +37,7 @@ Document = Backbone.Model.extend
 
       Code
         : TChars
-        | Span
+        | Annotation
         | %empty
         | Code Code
         ;
@@ -63,8 +63,10 @@ Document = Backbone.Model.extend
           { $$ = $1+$2; yy.on_text($2);}
         ;
 
-      Span
-        : '<' TChars '>' '(' Id ')'
+      Annotation
+        : '<' TChars '>'
+          { yy.on_span($2, $1+$2+$3); }
+        | '<' TChars '>' '(' Id ')'
           { yy.on_annotation($2, $5, $1+$2+$3+$4+$5+$6); }
         ;
 
@@ -201,6 +203,22 @@ Document = Backbone.Model.extend
 
       @annotations.push {
         id: id,
+        type: 'annotation',
+        start: @offset - content.length,
+        end: @offset,
+        code_start: @code_offset - code.length,
+        code_end: @code_offset,
+        code_line: @code_line,
+        content: content
+      }
+
+      @trigger('annotation')
+
+    @_jison_parser.yy.on_span = (content, code) =>
+      @code_offset += code.length - content.length
+
+      @annotations.push {
+        type: 'span',
         start: @offset - content.length,
         end: @offset,
         code_start: @code_offset - code.length,
@@ -236,7 +254,7 @@ Document = Backbone.Model.extend
       @annotations.forEach (a) =>
         a.directives = []
         @directives.forEach (d) =>
-          if a.id is d.id
+          if a.type is 'annotation' and a.id is d.id
             a.directives.push d
 
       # update the graph
@@ -266,7 +284,14 @@ Document = Backbone.Model.extend
 
         links.push {source: content, target: n, start: a.start, end: a.end, type: 'locus', inverted: true}
 
-        links.push {source: n, target: entity_index[a.id], type: 'about'}
+        # annotations with id and no directive associated
+        if a.id? and a.directives.length is 0
+          n2 = {type: 'entity', id: a.id}
+          nodes.push n2
+          entity_index[a.id] = n2
+
+        if a.type is 'annotation'
+          links.push {source: n, target: entity_index[a.id], type: 'about'}
 
       @set
         graph: graph
