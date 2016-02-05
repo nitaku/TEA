@@ -32,5 +32,16 @@ Editor = Backbone.D3View.extend
       gutters: ['error_gutter']
     }
 
+    @textmarks = []
+    @listenTo @model, 'annotation', () ->
+      for textmark in @textmarks
+        textmark.clear()
+        
+      for annotation in @model.annotations
+        console.log annotation
+        
+        textmark = editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line, ch: annotation.code_end}, {className: 'annotation'}
+        @textmarks.push textmark
+
     editor.on 'change', () =>
       @model.update editor.getValue()

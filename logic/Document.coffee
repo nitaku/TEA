@@ -65,7 +65,7 @@ Document = Backbone.Model.extend
 
       Span
         : '<' TChars '>' '(' Id ')'
-          { yy.on_annotation($2, $5); }
+          { yy.on_annotation($2, $5, $1+$2+$3+$4+$5+$6); }
         ;
 
       TextWithoutNewlineNorSpaceChar
@@ -183,20 +183,33 @@ Document = Backbone.Model.extend
 
     # custom error handling: trigger an 'error' event
     @_jison_parser.yy.parseError = (message, details) =>
-       @trigger('parse_error', message, details)
+      @trigger('parse_error', message, details)
 
     # update the parser's status whenever a language item is encountered
     @_jison_parser.yy.on_text = (content) =>
+      if content is '\n'
+        @code_line += 1
+        @code_offset = 0
+      else
+        @code_offset += content.length
+
       @offset += content.length
       @plain_text += content
 
-    @_jison_parser.yy.on_annotation = (content, id) =>
+    @_jison_parser.yy.on_annotation = (content, id, code) =>
+      @code_offset += code.length - content.length
+
       @annotations.push {
         id: id,
         start: @offset - content.length,
         end: @offset,
+        code_start: @code_offset - code.length,
+        code_end: @code_offset,
+        code_line: @code_line,
         content: content
       }
+
+      @trigger('annotation')
 
     @_jison_parser.yy.on_directive = (popairs, id) =>
       @directives.push {
@@ -210,6 +223,8 @@ Document = Backbone.Model.extend
 
     # parse the code
     @offset = 0
+    @code_line = 0
+    @code_offset = 0
     @annotations = []
     @directives = []
     @plain_text = ''

@@ -15,3 +15,7 @@
 .Editor .CodeMirror {
   height: 100%;
 }
+
+.annotation {
+  color: red;
+}
