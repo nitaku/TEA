@@ -58,14 +58,14 @@
 .GraphView .span.node .label {
   fill: #1f77b4;
 }
-.GraphView .entity.node {
+.GraphView .about_resource.node {
   fill: #FFD7B3;
   stroke: #ff7f0e;
 }
-.GraphView .entity.node .label {
+.GraphView .about_resource.node .label {
   fill: #ff7f0e;
 }
-.GraphView .external.node {
+.GraphView .resource.node {
   fill: #EEE;
   stroke: #999;
 }

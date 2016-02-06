@@ -5,7 +5,7 @@ prefixes =
   rdfs: 'http://www.w3.org/2000/01/rdf-schema#'
   foaf: 'http://xmlns.com/foaf/0.1/'
   dbo: 'http://dbpedia.org/ontology/'
-  dbr: 'http://dbpedia.org/resource/'
+  dbr: 'http://dbpedia.org/about_resource/'
   wiki: 'http://en.wikipedia.org/wiki/'
 
 GraphView = Backbone.D3View.extend
@@ -60,7 +60,7 @@ GraphView = Backbone.D3View.extend
       if n.in_neighbors.length is 0
         n.longest_dist = switch n.type
           when 'content' then 0
-          when 'entity' then 2
+          when 'about_resource' then 2
 
     for i in topological_order # control direction
       n = graph.nodes[i]
@@ -144,11 +144,11 @@ GraphView = Backbone.D3View.extend
       .attr
         target: '_blank'
 
-    enter_as.filter (d) -> d.type is 'external'
+    enter_as.filter (d) -> d.type is 'resource'
       .attr
         class: 'valid'
         'xlink:href': (d) ->
-          if d.type isnt 'external'
+          if d.type isnt 'resource'
             return ''
 
           splitted = (''+d.id).split ':'
@@ -160,10 +160,10 @@ GraphView = Backbone.D3View.extend
     enter_as.append 'text'
       .text (d) ->
         switch d.type
-          when 'external' then d.id
+          when 'resource' then d.id
           when 'content' then 'CONTENT'
           when 'span' then "< >"
-          when 'entity' then "(#{d.id})"
+          when 'about_resource' then "(#{d.id})"
       .attr
         class: 'label'
         dy: '0.35em'
