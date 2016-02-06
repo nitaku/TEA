@@ -133,3 +133,7 @@ sel.on 'change', () ->
     model: doc
 
   doc.fetch()
+
+d3.select(document).on 'keyup', () ->
+  if d3.event.altKey and d3.event.ctrlKey and d3.event.code is 'KeyN'
+    navigator.d3el.classed 'hidden', not navigator.d3el.classed 'hidden'
