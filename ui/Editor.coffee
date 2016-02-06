@@ -32,15 +32,16 @@ Editor = Backbone.D3View.extend
     }
 
     editor.on 'change', () =>
+      # clear syntax highlighting
+      for textmark in @annotation_textmarks
+        textmark.clear()
+        
       @model.update editor.getValue()
 
     # annotation highlighting
     @annotation_textmarks = []
 
     @listenTo @model, 'annotation', () ->
-      for textmark in @annotation_textmarks
-        textmark.clear()
-
       for annotation in @model.annotations
         newline_matches = if annotation.content.match(/\n/g) then annotation.content.match(/\n/g).length else 0
 
