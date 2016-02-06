@@ -325,20 +325,20 @@ Document = Backbone.Model.extend
       links = []
       graph = {nodes: nodes, links: links}
       span_index = {}
-      entity_index = {}
+      about_resource_index = {}
 
       console.log @directives
 
       @directives.forEach (d) ->
-        if d.id not of entity_index
-          n = {type: 'entity', id: d.id}
+        if d.id not of about_resource_index
+          n = {type: 'about_resource', id: d.id}
           nodes.push n
-          entity_index[d.id] = n
+          about_resource_index[d.id] = n
         else
-          n = entity_index[d.id]
+          n = about_resource_index[d.id]
 
         d.popairs.forEach (p) ->
-          ext_n = {type: 'external', id: p.object}
+          ext_n = {type: 'resource', id: p.object}
           nodes.push ext_n
 
           links.push {source: n, target: ext_n, type: 'predicate', predicate: p.predicate}
@@ -354,12 +354,12 @@ Document = Backbone.Model.extend
 
       @abouts.forEach (a, i) ->
         # create about nodes with id and no directive associated
-        if a.id? and a.directives.length is 0 and a.id not of entity_index
-          n = {type: 'entity', id: a.id}
+        if a.id? and a.directives.length is 0 and a.id not of about_resource_index
+          n = {type: 'about_resource', id: a.id}
           nodes.push n
-          entity_index[a.id] = n
+          about_resource_index[a.id] = n
 
-        links.push {source: span_index[a.span.id], target: entity_index[a.id], type: 'about'}
+        links.push {source: span_index[a.span.id], target: about_resource_index[a.id], type: 'about'}
 
       @set
         graph: graph
