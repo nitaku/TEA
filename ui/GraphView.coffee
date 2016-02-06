@@ -5,7 +5,7 @@ prefixes =
   rdfs: 'http://www.w3.org/2000/01/rdf-schema#'
   foaf: 'http://xmlns.com/foaf/0.1/'
   dbo: 'http://dbpedia.org/ontology/'
-  dbr: 'http://dbpedia.org/about_resource/'
+  dbr: 'http://dbpedia.org/resource/'
   wiki: 'http://en.wikipedia.org/wiki/'
 
 GraphView = Backbone.D3View.extend
