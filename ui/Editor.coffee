@@ -28,7 +28,6 @@ Editor = Backbone.D3View.extend
     editor = CodeMirror wrapper.node(), {
       mode: 'mtss',
       lineNumbers: false,
-      lineWrapping: true,
       gutters: ['error_gutter']
     }
 

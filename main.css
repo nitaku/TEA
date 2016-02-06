@@ -12,17 +12,17 @@ body {
 }
 
 #navigator {
-  width: 80px;
+  width: 60px;
   box-sizing: border-box;
   border-right: 2px solid gray;
 }
 #editor {
-  flex-grow: 1;
+  flex-grow: 3;
   width: 0;
   box-sizing: border-box;
   border-right: 2px solid gray;
 }
 #graph_view {
-  flex-grow: 1;
+  flex-grow: 2;
   width: 0;
 }
