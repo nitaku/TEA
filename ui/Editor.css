@@ -17,14 +17,25 @@
   font-size: 12px;
 }
 
-.annotation {
+.Editor .span {
   background: rgba(31,118,180,0.1);
 }
-.square_bracket {
+.Editor .angle_bracket {
   font-weight: bold;
   color: rgba(31,118,180,1);
 }
-.round_bracket {
+.Editor .round_bracket {
   color: #ff7f0e;
+  font-weight: bold;
+}
+.Editor .directive {
+  background: #F7F7F7;
+}
+.Editor .directive_block_opener {
+  border-bottom: 1px solid #DDD;
+  font-weight: bold;
+}
+.Editor .directive_block_closer {
+  border-top: 1px solid #DDD;
   font-weight: bold;
 }

@@ -34,16 +34,35 @@ Document = Backbone.Model.extend
       Document
         : EOF
         | Code EOF
-        | CodeDirectiveBlock EOF
-        | CodeDirectiveBlock Code EOF
-        | Code '___' Directives EOF
-        | CodeDirectiveBlock Code '___' Directives EOF
+        | CodeDirectiveBlocks EOF
+        | CodeDirectiveBlocks Code EOF
+        | Code DirectiveBlockOpener Directives EOF
+        | CodeDirectiveBlocks Code DirectiveBlockOpener Directives EOF
+        ;
+
+      CodeDirectiveBlocks
+        : CodeDirectiveBlock
+        | CodeDirectiveBlocks CodeDirectiveBlock
         ;
 
       CodeDirectiveBlock
-        : Code '___' Directives '^^^'
-        | Code '___^^^'
-        | CodeDirectiveBlock CodeDirectiveBlock
+        : Code DirectiveBlockOpener Directives DirectiveBlockCloser
+        | Code EmptyDirectiveBlock
+        ;
+
+      DirectiveBlockOpener
+        : '___'
+          { yy.new_directive_block_opener(); }
+        ;
+
+      DirectiveBlockCloser
+        : '^^^'
+          { yy.new_directive_block_closer(); }
+        ;
+
+      EmptyDirectiveBlock
+        : '___^^^'
+          { yy.new_empty_directive_block(); }
         ;
 
       Code
@@ -69,16 +88,16 @@ Document = Backbone.Model.extend
 
       TChars
         : TChar
-          { yy.on_text($1); }
+          { yy.new_text($1); }
         | TChars TChar
-          { $$ = $1+$2; yy.on_text($2);}
+          { $$ = $1+$2; yy.new_text($2);}
         ;
 
       Annotation
         : '<' TChars '>'
-          { yy.on_span($2, $1+$2+$3); }
+          { yy.new_span($2, $1+$2+$3); }
         | '<' TChars '>' '(' Id ')'
-          { yy.on_annotation($2, $5, $1+$2+$3+$4+$5+$6); }
+          { span = yy.new_span($2, $1+$2+$3); yy.new_about(span, $5, $4+$5+$6); }
         ;
 
       TextWithoutNewlineNorSpaceChar
@@ -142,13 +161,13 @@ Document = Backbone.Model.extend
 
       Directive
         : SpacesOrNothing '(' Id ')' SpacesOrNothing POSequence SpacesOrNothing
-          { yy.on_directive($6, $3); }
+          { yy.new_directive($6, $3); }
         | SpacesOrNothing '[' Id ']' SpacesOrNothing POSequence SpacesOrNothing
-          { yy.on_directive($6, $3); }
+          { yy.new_directive($6, $3); }
         | SpacesOrNothing '(' Id ')'
-          { yy.on_directive([], $3); }
+          { yy.new_directive([], $3); }
         | SpacesOrNothing '[' Id ']'
-          { yy.on_directive([], $3); }
+          { yy.new_directive([], $3); }
         | SpacesOrNothing
         ;
 
@@ -203,7 +222,7 @@ Document = Backbone.Model.extend
       @trigger('parse_error', message, details)
 
     # update the parser's status whenever a language item is encountered
-    @_jison_parser.yy.on_text = (content) =>
+    @_jison_parser.yy.new_text = (content) =>
       if content is '\n'
         @code_line += 1
         @code_offset = 0
@@ -213,26 +232,10 @@ Document = Backbone.Model.extend
       @offset += content.length
       @plain_text += content
 
-    @_jison_parser.yy.on_annotation = (content, id, code) =>
+    @_jison_parser.yy.new_span = (content, code) =>
       @code_offset += code.length - content.length
 
-      @annotations.push {
-        id: id,
-        type: 'annotation',
-        start: @offset - content.length,
-        end: @offset,
-        code_start: @code_offset - code.length,
-        code_end: @code_offset,
-        code_line: @code_line,
-        content: content
-      }
-
-      @trigger('annotation')
-
-    @_jison_parser.yy.on_span = (content, code) =>
-      @code_offset += code.length - content.length
-
-      @annotations.push {
+      span = {
         type: 'span',
         start: @offset - content.length,
         end: @offset,
@@ -241,14 +244,57 @@ Document = Backbone.Model.extend
         code_line: @code_line,
         content: content
       }
+      @spans.push span
 
-      @trigger('annotation')
+      @trigger('parse_span', span)
 
-    @_jison_parser.yy.on_directive = (popairs, id) =>
-      @directives.push {
+      return span
+
+    @_jison_parser.yy.new_about = (span, id, code) =>
+      @code_offset += code.length
+
+      about = {
         id: id,
+        type: 'annotation',
+        span: span,
+        code_start: @code_offset - code.length,
+        code_end: @code_offset,
+        code_line: @code_line
+      }
+      @abouts.push about
+
+      @trigger('parse_about', about)
+
+      return about
+
+    @_jison_parser.yy.new_directive_block_opener = () =>
+      @code_line += 1
+      @code_offset = 0
+      @trigger('parse_directive_block_opener', {code_line: @code_line})
+
+    @_jison_parser.yy.new_directive_block_closer = () =>
+      @code_line += 2
+      @code_offset = 0
+      @trigger('parse_directive_block_closer', {code_line: @code_line-1})
+
+    @_jison_parser.yy.new_empty_directive_block = () =>
+      @code_line += 3
+      @code_offset = 0
+
+    @_jison_parser.yy.new_directive = (popairs, id) =>
+      @code_line += 1
+      @code_offset = 0
+
+      directive = {
+        id: id,
+        code_line: @code_line,
         popairs: popairs
       }
+      @directives.push directive
+
+      @trigger('parse_directive', directive)
+
+      return directive
 
   update: (code) ->
     @set
@@ -258,18 +304,19 @@ Document = Backbone.Model.extend
     @offset = 0
     @code_line = 0
     @code_offset = 0
-    @annotations = []
+    @spans = []
+    @abouts = []
     @directives = []
     @plain_text = ''
 
     try
       @_jison_parser.parse(code)
 
-      # resolve annotations-directive reference
-      @annotations.forEach (a) =>
+      # resolve about-directive reference
+      @abouts.forEach (a) =>
         a.directives = []
         @directives.forEach (d) =>
-          if a.type is 'annotation' and a.id is d.id
+          if a.id is d.id
             a.directives.push d
 
       # update the graph
@@ -277,7 +324,10 @@ Document = Backbone.Model.extend
       nodes = [content]
       links = []
       graph = {nodes: nodes, links: links}
+      span_index = {}
       entity_index = {}
+
+      console.log @directives
 
       @directives.forEach (d) ->
         if d.id not of entity_index
@@ -293,20 +343,23 @@ Document = Backbone.Model.extend
 
           links.push {source: n, target: ext_n, type: 'predicate', predicate: p.predicate}
 
-      @annotations.forEach (a, i) ->
-        n = {type: 'span', id: i}
+      @spans.forEach (s, i) ->
+        s.id = i # FIXME spans have no meaningful id
+
+        n = {type: 'span', id: s.id}
         nodes.push n
+        span_index[s.id] = n
 
-        links.push {source: content, target: n, start: a.start, end: a.end, type: 'locus', inverted: true}
+        links.push {source: content, target: n, start: s.start, end: s.end, type: 'locus', inverted: true}
 
-        # annotations with id and no directive associated
-        if a.id? and a.directives.length is 0
-          n2 = {type: 'entity', id: a.id}
-          nodes.push n2
-          entity_index[a.id] = n2
+      @abouts.forEach (a, i) ->
+        # create about nodes with id and no directive associated
+        if a.id? and a.directives.length is 0 and a.id not of entity_index
+          n = {type: 'entity', id: a.id}
+          nodes.push n
+          entity_index[a.id] = n
 
-        if a.type is 'annotation'
-          links.push {source: n, target: entity_index[a.id], type: 'about'}
+        links.push {source: span_index[a.span.id], target: entity_index[a.id], type: 'about'}
 
       @set
         graph: graph

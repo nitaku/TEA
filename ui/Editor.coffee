@@ -21,22 +21,34 @@ Editor = Backbone.D3View.extend
 
     editor.on 'change', () =>
       # clear syntax highlighting
-      for textmark in editor.getAllMarks()
-        textmark.clear()
+      editor.getAllMarks().forEach (mark) =>
+        mark.clear()
 
+      d3.range(editor.firstLine(), editor.lastLine()+1).forEach (l) =>
+        editor.removeLineClass l, 'background'
+        editor.removeLineClass l, 'text'
+
+      # update the document model
       @model.update editor.getValue()
 
-    @listenTo @model, 'annotation', () ->
-      for annotation in @model.annotations
-        newline_matches = if annotation.content.match(/\n/g) then annotation.content.match(/\n/g).length else 0
+    # react to parse events to do the syntax highlighting
+    @listenTo @model, 'parse_span', (span) ->
+      editor.markText {line: span.code_line, ch: span.code_start}, {line: span.code_line, ch: span.code_start+1}, {className: 'angle_bracket'}
+      editor.markText {line: span.code_line, ch: span.code_start+span.content.length+1}, {line: span.code_line, ch: span.code_start+span.content.length+2}, {className: 'angle_bracket'}
 
-        #editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line+newline_matches, ch: annotation.code_end}, {className: 'annotation'}
+      editor.markText {line: span.code_line, ch: span.code_start}, {line: span.code_line, ch: span.code_start+span.content.length+2}, {className: 'span'}
 
-        editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line, ch: annotation.code_start+1}, {className: 'square_bracket'}
-        editor.markText {line: annotation.code_line, ch: annotation.code_start+annotation.content.length+1}, {line: annotation.code_line, ch: annotation.code_start+annotation.content.length+2}, {className: 'square_bracket'}
+    @listenTo @model, 'parse_about', (about) ->
+      editor.markText {line: about.code_line, ch: about.code_end-1}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket'}
+      editor.markText {line: about.code_line, ch: about.code_end-about.id.length-2}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket'}
 
-        editor.markText {line: annotation.code_line, ch: annotation.code_start}, {line: annotation.code_line, ch: annotation.code_start+annotation.content.length+2}, {className: 'annotation'}
+    @listenTo @model, 'parse_directive', (directive) ->
+      editor.addLineClass directive.code_line, 'background', 'directive'
 
-        if annotation.type is 'annotation'
-          editor.markText {line: annotation.code_line, ch: annotation.code_end-1}, {line: annotation.code_line, ch: annotation.code_end}, {className: 'round_bracket'}
-          editor.markText {line: annotation.code_line, ch: annotation.code_end-annotation.id.length-2}, {line: annotation.code_line, ch: annotation.code_end}, {className: 'round_bracket'}
+    @listenTo @model, 'parse_directive_block_opener', (opener) ->
+      editor.addLineClass opener.code_line, 'background', 'directive_block_opener'
+      editor.addLineClass opener.code_line, 'text', 'directive_block_opener'
+
+    @listenTo @model, 'parse_directive_block_closer', (closer) ->
+      editor.addLineClass closer.code_line, 'background', 'directive_block_closer'
+      editor.addLineClass closer.code_line, 'text', 'directive_block_closer'
