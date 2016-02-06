@@ -2,18 +2,6 @@ Editor = Backbone.D3View.extend
   initialize: () ->
     @d3el.classed 'Editor', true
 
-    # define highlighting regexp
-    CodeMirror.defineSimpleMode('mtss', {
-      start: [
-        {regex: new RegExp('(\\<)([^\\>]*)(\\>)(\\()([^\\)]*)(\\))'), token: ['span_symbol','span_text','span_symbol','entity_symbol','entity_id','entity_symbol']},
-        {regex: new RegExp('^___$'), token: 'start_directives', next: 'directives'}
-      ],
-      directives: [
-        {regex: new RegExp('(\\()(.*)(\\))'), token: ['entity_symbol','entity_id','entity_symbol']},
-        {regex: new RegExp('.'), token: 'directive'}
-      ]
-    })
-
     # Chrome bug workaround (https://github.com/codemirror/CodeMirror/issues/3679)
     @d3el
       .style
@@ -26,7 +14,6 @@ Editor = Backbone.D3View.extend
 
     # create the CodeMirror editor
     editor = CodeMirror wrapper.node(), {
-      mode: 'mtss',
       lineNumbers: false,
       gutters: ['error_gutter'],
       value: @model.attributes.code
