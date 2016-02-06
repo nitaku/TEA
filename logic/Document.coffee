@@ -327,8 +327,6 @@ Document = Backbone.Model.extend
       span_index = {}
       about_resource_index = {}
 
-      console.log @directives
-
       @directives.forEach (d) ->
         if d.id not of about_resource_index
           n = {type: 'about_resource', id: d.id}
