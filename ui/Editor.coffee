@@ -28,14 +28,15 @@ Editor = Backbone.D3View.extend
     editor = CodeMirror wrapper.node(), {
       mode: 'mtss',
       lineNumbers: false,
-      gutters: ['error_gutter']
+      gutters: ['error_gutter'],
+      value: @model.attributes.code
     }
 
     editor.on 'change', () =>
       # clear syntax highlighting
       for textmark in @annotation_textmarks
         textmark.clear()
-        
+
       @model.update editor.getValue()
 
     # annotation highlighting
