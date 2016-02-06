@@ -25,7 +25,7 @@ sel.on 'change', () ->
   doc = new Document
     code: '''
       Molto Reverendo Padre, mio Signor Colendissimo
-      La lettera di Vostra Reverenza mi è stata tanto più grata quanto più
+      La lettera di <Vostra Reverenza> mi è stata tanto più grata quanto più
       desiderata et meno aspettata, et havendomi ella trovato assai indisposto, et
       quasi fermo in letto mi ha in gran parte sollevato dal male, portandomi il
       guadagno di un tanto testimonio alla verità delle mie nuove osservazioni, il
@@ -136,3 +136,7 @@ sel.on 'change', () ->
   graph_view = new GraphView
     el: '#graph_view'
     model: doc
+
+  # do the first parsing of the document
+  doc.parse()
+  

@@ -29,7 +29,10 @@ Editor = Backbone.D3View.extend
         editor.removeLineClass l, 'text'
 
       # update the document model
-      @model.update editor.getValue()
+      @model.set
+        code: editor.getValue()
+        
+      @model.parse()
 
     # react to parse events to do the syntax highlighting
     @listenTo @model, 'parse_span', (span) ->

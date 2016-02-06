@@ -296,10 +296,7 @@ Document = Backbone.Model.extend
 
       return directive
 
-  update: (code) ->
-    @set
-      code: code
-
+  parse: () ->
     # parse the code
     @offset = 0
     @code_line = 0
@@ -310,7 +307,7 @@ Document = Backbone.Model.extend
     @plain_text = ''
 
     try
-      @_jison_parser.parse(code)
+      @_jison_parser.parse(@attributes.code)
 
       # resolve about-directive reference
       @abouts.forEach (a) =>
