@@ -39,3 +39,7 @@
   border-top: 1px solid #DDD;
   font-weight: bold;
 }
+.Editor .error {
+  background: rgba(255,0,0,0.2);
+  border-bottom: 2px solid red;
+}

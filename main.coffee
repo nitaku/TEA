@@ -124,10 +124,6 @@ sel.on 'change', () ->
   doc = new Document
     id: sel.attributes.id
 
-  # stub of Editor view
-  doc.on 'parse_error', () ->
-    console.log 'parse error'
-
   editor = new Editor
     el: '#editor'
     model: doc
@@ -137,6 +133,3 @@ sel.on 'change', () ->
     model: doc
 
   doc.fetch()
-  
-  # do the first parsing of the document
-  # doc.parse()

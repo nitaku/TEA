@@ -28,6 +28,8 @@ Editor = Backbone.D3View.extend
         editor.removeLineClass l, 'background'
         editor.removeLineClass l, 'text'
 
+      editor.clearGutter 'error_gutter'
+
       # update the document model
       @model.set
         code: editor.getValue()
@@ -62,3 +64,19 @@ Editor = Backbone.D3View.extend
     @listenTo @model, 'parse_directive_block_closer', (closer) ->
       editor.addLineClass closer.code_line, 'background', 'directive_block_closer'
       editor.addLineClass closer.code_line, 'text', 'directive_block_closer'
+
+    @listenTo @model, 'parse_error', (message, details) ->
+      error_marker = d3.select document.createElement('a')
+        .text 'X'
+        .style
+          'text-align': 'center'
+          background: 'red'
+          color: 'white'
+          display: 'inline-block'
+          width: '10px'
+          'margin-left': '1px'
+        .attr
+          title: "Unexpected #{details.token}"
+
+      editor.setGutterMarker details.line, 'error_gutter', error_marker.node()
+      editor.markText {line: details.loc.first_line-1, ch: details.loc.first_column+1}, {line: details.loc.last_line-1, ch: details.loc.last_column+1}, {className: 'error'}
