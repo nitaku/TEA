@@ -8,6 +8,7 @@ Navigator = Backbone.D3View.extend
 
     @d3el.classed 'Navigator', true
 
+    @listenTo @items, 'reset', @render
     @listenTo @selection, 'change', @render
 
     @render()

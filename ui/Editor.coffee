@@ -31,8 +31,15 @@ Editor = Backbone.D3View.extend
       # update the document model
       @model.set
         code: editor.getValue()
-        
+
       @model.parse()
+
+      # TODO debounce this
+      @model.save()
+
+    # write the code into the editor when is loaded from the server
+    @listenTo @model, 'sync', () =>
+      editor.setValue @model.attributes.code # this also fires the above 'change' callback
 
     # react to parse events to do the syntax highlighting
     @listenTo @model, 'parse_span', (span) ->
