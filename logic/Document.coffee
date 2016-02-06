@@ -8,21 +8,23 @@ Document = Backbone.Model.extend
       %lex
       %%
 
-      \\n___\\n      return '___'
-      "<"            return '<'
-      ">"            return '>'
-      "("            return '('
-      ")"            return ')'
-      "["            return '['
-      "]"            return ']'
-      [_]            return 'UNDERSCORE'
-      (" "|\\t)+     return 'SPACES'
-      ";"            return ';'
-      [0-9]          return 'DIGIT'
-      [a-zA-Z]       return 'ALPHABETIC_ASCII'
-      .              return 'OTHER_CHAR'
-      \\n            return 'NEWLINE'
-      <<EOF>>        return 'EOF'
+      \\n___\\n\\^\\^\\^\\n                    return '___^^^'
+      \\n___\\n                                return '___'
+      \\n\\^\\^\\^\\n                          return '^^^'
+      "<"                                      return '<'
+      ">"                                      return '>'
+      "("                                      return '('
+      ")"                                      return ')'
+      "["                                      return '['
+      "]"                                      return ']'
+      [_]                                      return 'UNDERSCORE'
+      (" "|\\t)+                               return 'SPACES'
+      ";"                                      return ';'
+      [0-9]                                    return 'DIGIT'
+      [a-zA-Z]                                 return 'ALPHABETIC_ASCII'
+      .                                        return 'OTHER_CHAR'
+      \\n                                      return 'NEWLINE'
+      <<EOF>>                                  return 'EOF'
 
       /lex
 
@@ -32,7 +34,16 @@ Document = Backbone.Model.extend
       Document
         : EOF
         | Code EOF
+        | CodeDirectiveBlock EOF
+        | CodeDirectiveBlock Code EOF
         | Code '___' Directives EOF
+        | CodeDirectiveBlock Code '___' Directives EOF
+        ;
+
+      CodeDirectiveBlock
+        : Code '___' Directives '^^^'
+        | Code '___^^^'
+        | CodeDirectiveBlock CodeDirectiveBlock
         ;
 
       Code
