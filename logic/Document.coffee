@@ -11,6 +11,7 @@ Document = Backbone.Model.extend
       \\n___\\n\\^\\^\\^\\n                    return '___^^^'
       \\n___\\n                                return '___'
       \\n\\^\\^\\^\\n                          return '^^^'
+      \\"                                      return '"'
       "<"                                      return '<'
       ">"                                      return '>'
       "("                                      return '('
@@ -74,6 +75,7 @@ Document = Backbone.Model.extend
 
       TChar
         : OTHER_CHAR
+        | '"'
         | '('
         | ')'
         | '['
@@ -114,6 +116,7 @@ Document = Backbone.Model.extend
 
       NotNewlineNorSpaceChar
         : OTHER_CHAR
+        | '"'
         | '<'
         | '>'
         | '('
@@ -209,6 +212,26 @@ Document = Backbone.Model.extend
 
       Object
         : POChars
+        | '"' LiteralChars '"'
+        ;
+
+      LiteralChar
+        : OTHER_CHAR
+        | '<'
+        | '>'
+        | '('
+        | ')'
+        | '['
+        | ']'
+        | UNDERSCORE
+        | DIGIT
+        | ALPHABETIC_ASCII
+        | SPACES
+        ;
+
+      LiteralChars
+        : LiteralChar
+        | LiteralChars LiteralChar
         ;
 
       '''
