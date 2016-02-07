@@ -302,6 +302,8 @@ Document = Backbone.Model.extend
       directive = {
         id: id,
         code_line: @code_line,
+        code_subject_start: 0,
+        code_subject_end: "#{id}".length+2,
         popairs: popairs
       }
       @directives.push directive

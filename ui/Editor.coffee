@@ -129,12 +129,12 @@ Editor = Backbone.D3View.extend
       editor.markText {line: span.code_line, ch: span.code_start}, {line: span.code_line, ch: span.code_start+span.content.length+2}, {className: 'span'}
 
     @listenTo @model, 'parse_about', (about) ->
-      editor.markText {line: about.code_line, ch: about.code_end-1}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket code'}
-      editor.markText {line: about.code_line, ch: about.code_end-about.id.length-2}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket code'}
+      editor.markText {line: about.code_line, ch: about.code_start}, {line: about.code_line, ch: about.code_end}, {className: 'about_resource code'}
 
     @listenTo @model, 'parse_directive', (directive) ->
       editor.addLineClass directive.code_line, 'background', 'directive'
       editor.addLineClass directive.code_line, 'text', 'code directive_block_code'
+      editor.markText {line: directive.code_line, ch: directive.code_subject_start}, {line: directive.code_line, ch: directive.code_subject_end}, {className: 'about_resource code'}
 
     @listenTo @model, 'parse_directive_block_opener', (opener) ->
       editor.addLineClass opener.code_line, 'background', 'directive_block_opener'
