@@ -61,6 +61,42 @@ Editor = Backbone.D3View.extend
       .attr
         title: 'Insert a new block for RDF triples.'
 
+    bar.append 'button'
+      .text 'sameAs'
+      .on 'click', () =>
+        editor.replaceSelection '(subj) owl:sameAs dbr:' # FIXME support more than one selection
+        pos = editor.getCursor()
+        editor.setSelection {line: pos.line, ch: 1}, {line: pos.line, ch: 5}
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Insert a new RDF triple with a owl:sameAs predicate and a DBPedia resource as object. Use it within a +++ block.'
+
+    bar.append 'button'
+      .text 'topicOf'
+      .on 'click', () =>
+        editor.replaceSelection '(subj) foaf:isPrimaryTopicOf http://' # FIXME support more than one selection
+        pos = editor.getCursor()
+        editor.setSelection {line: pos.line, ch: 1}, {line: pos.line, ch: 5}
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Insert a new RDF triple with a foaf:isPrimaryTopicOf predicate and an HTTP url as object. Use it within a +++ block.'
+
+    bar.append 'button'
+      .text 'comment'
+      .on 'click', () =>
+        editor.replaceSelection '(subj) rdfs:comment ""' # FIXME support more than one selection
+        pos = editor.getCursor()
+        editor.setSelection {line: pos.line, ch: 1}, {line: pos.line, ch: 5}
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Insert a new RDF triple with a rdfs:comment predicate and a string literal as object. Use it within a +++ block.'
+
     editor.on 'change', () =>
       # clear syntax highlighting
       editor.getAllMarks().forEach (mark) =>

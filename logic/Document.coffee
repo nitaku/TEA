@@ -204,6 +204,9 @@ Document = Backbone.Model.extend
       Object
         : POChars
         | '"' LiteralChars '"'
+          { $$ = $1+$2+$3; }
+        | '"' '"'
+          { $$ = $1+$2; }
         ;
 
       LiteralChar
@@ -223,6 +226,7 @@ Document = Backbone.Model.extend
       LiteralChars
         : LiteralChar
         | LiteralChars LiteralChar
+          { $$ = $1+$2; }
         ;
 
       '''
