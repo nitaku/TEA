@@ -31,9 +31,11 @@
   font-size: 12px;
   font-family: sans-serif;
   line-height: 1.3;
+  background: #F7F7F7;
 }
-.Editor .CodeMirror-lines {
+.Editor .CodeMirror-lines > * {
   border-right: 1px solid #DDD;
+  background: white;
 }
 
 .Editor .span {
@@ -48,16 +50,16 @@
   font-weight: bold;
 }
 .Editor .directive {
-  background: #F7F7F7;
+  background: rgba(255, 177, 0, 0.05);
   color: #444;
 }
 .Editor .directive_block_opener {
   border-top: 1px solid #DDD;
-  background: #F7F7F7;
+  background: rgba(255, 177, 0, 0.05);
 }
 .Editor .directive_block_closer {
   border-bottom: 1px solid #DDD;
-  background: #F7F7F7;
+  background: rgba(255, 177, 0, 0.05);
 }
 .Editor .directive_block_code {
   color: #555;
