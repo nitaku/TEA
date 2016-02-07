@@ -6,8 +6,22 @@
   display: flex;
   flex-direction: column;
 }
-
-.Editor > * {
+.Editor .bar {
+  height: 22px;
+  display: flex;
+  flex-direction: row;
+  padding: 4px;
+  border-bottom: 1px solid gray;
+  background: #DDD;
+}
+.Editor .bar > * {
+  width: 38px;
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 12px;
+  margin-right: 4px;
+}
+.Editor .editor_div {
   flex-grow: 1;
   height: 0;
 }

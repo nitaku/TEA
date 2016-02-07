@@ -2,11 +2,18 @@ Editor = Backbone.D3View.extend
   initialize: () ->
     @d3el.classed 'Editor', true
 
+    bar = @d3el.append 'div'
+      .attr
+        class: 'bar'
+
     # Chrome bug workaround (https://github.com/codemirror/CodeMirror/issues/3679)
-    @d3el
+    editor_div = @d3el.append 'div'
+      .attr
+        class: 'editor_div'
       .style
         position: 'relative'
-    wrapper = @d3el.append 'div'
+
+    wrapper = editor_div.append 'div'
       .style
         position: 'absolute'
         height: '100%'
@@ -18,6 +25,26 @@ Editor = Backbone.D3View.extend
       gutters: ['error_gutter'],
       value: @model.attributes.code
     }
+
+    # create the toolbar buttons
+    bar.append 'button'
+      .text '< >'
+      .on 'click', () =>
+        editor.replaceSelection '<' + editor.getSelection() + '>' # FIXME support more than one selection
+        editor.focus()
+      .style
+        color: '#1f77b4'
+
+    bar.append 'button'
+      .text '( )'
+      .on 'click', () =>
+        editor.replaceSelection '()' # FIXME support more than one selection
+        pos = editor.getCursor()
+        pos.ch -= 1
+        editor.setCursor pos
+        editor.focus()
+      .style
+        color: '#ff7f0e'
 
     editor.on 'change', () =>
       # clear syntax highlighting
