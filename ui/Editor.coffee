@@ -40,15 +40,26 @@ Editor = Backbone.D3View.extend
     bar.append 'button'
       .text '( )'
       .on 'click', () =>
-        editor.replaceSelection '()' # FIXME support more than one selection
+        editor.replaceSelection '(id)' # FIXME support more than one selection
         pos = editor.getCursor()
-        pos.ch -= 1
-        editor.setCursor pos
+        editor.setSelection {line: pos.line, ch: pos.ch-3}, {line: pos.line, ch:  pos.ch-1}
         editor.focus()
       .style
         color: '#ff7f0e'
       .attr
         title: 'Insert a new about reference. Use it after a span or in a triple subject.'
+
+    bar.append 'button'
+      .text '+++'
+      .on 'click', () =>
+        editor.replaceSelection '+++\n(subj) pred obj\n+++' # FIXME support more than one selection
+        pos = editor.getCursor()
+        editor.setSelection {line: pos.line-1, ch: 0}, {line: pos.line-1, ch: 15}
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Insert a new block for RDF triples.'
 
     editor.on 'change', () =>
       # clear syntax highlighting
@@ -87,15 +98,15 @@ Editor = Backbone.D3View.extend
 
     @listenTo @model, 'parse_directive', (directive) ->
       editor.addLineClass directive.code_line, 'background', 'directive'
-      editor.addLineClass directive.code_line, 'text', 'code'
+      editor.addLineClass directive.code_line, 'text', 'code directive_block_code'
 
     @listenTo @model, 'parse_directive_block_opener', (opener) ->
       editor.addLineClass opener.code_line, 'background', 'directive_block_opener'
-      editor.addLineClass opener.code_line, 'text', 'directive_block_opener code'
+      editor.addLineClass opener.code_line, 'text', 'code directive_block_code'
 
     @listenTo @model, 'parse_directive_block_closer', (closer) ->
       editor.addLineClass closer.code_line, 'background', 'directive_block_closer'
-      editor.addLineClass closer.code_line, 'text', 'directive_block_closer code'
+      editor.addLineClass closer.code_line, 'text', 'code directive_block_code'
 
     @listenTo @model, 'parse_error', (message, details) ->
       error_marker = d3.select document.createElement('a')

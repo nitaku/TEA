@@ -8,9 +8,7 @@ Document = Backbone.Model.extend
       %lex
       %%
 
-      \\n___\\n\\^\\^\\^\\n                    return '___^^^'
-      \\n___\\n                                return '___'
-      \\n\\^\\^\\^\\n                          return '^^^'
+      \\n\\+\\+\\+                             return '/+++'
       \\"                                      return '"'
       "<"                                      return '<'
       ">"                                      return '>'
@@ -37,33 +35,26 @@ Document = Backbone.Model.extend
         | Code EOF
         | CodeDirectiveBlocks EOF
         | CodeDirectiveBlocks Code EOF
-        | Code DirectiveBlockOpener Directives EOF
-        | CodeDirectiveBlocks Code DirectiveBlockOpener Directives EOF
         ;
 
       CodeDirectiveBlocks
         : CodeDirectiveBlock
-        | CodeDirectiveBlocks CodeDirectiveBlock
+        | CodeDirectiveBlocks NEWLINE CodeDirectiveBlock
         ;
 
       CodeDirectiveBlock
-        : Code DirectiveBlockOpener Directives DirectiveBlockCloser
-        | Code EmptyDirectiveBlock
+        : Code DirectiveBlockOpener NEWLINE Directives DirectiveBlockCloser
+        | Code DirectiveBlockOpener DirectiveBlockCloser
         ;
 
       DirectiveBlockOpener
-        : '___'
+        : '/+++'
           { yy.new_directive_block_opener(); }
         ;
 
       DirectiveBlockCloser
-        : '^^^'
+        : '/+++'
           { yy.new_directive_block_closer(); }
-        ;
-
-      EmptyDirectiveBlock
-        : '___^^^'
-          { yy.new_empty_directive_block(); }
         ;
 
       Code
@@ -299,10 +290,6 @@ Document = Backbone.Model.extend
       @code_line += 2
       @code_offset = 0
       @trigger('parse_directive_block_closer', {code_line: @code_line-1})
-
-    @_jison_parser.yy.new_empty_directive_block = () =>
-      @code_line += 3
-      @code_offset = 0
 
     @_jison_parser.yy.new_directive = (popairs, id) =>
       @code_line += 1

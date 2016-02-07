@@ -15,7 +15,7 @@
   background: #DDD;
 }
 .Editor .bar > * {
-  width: 38px;
+  min-width: 38px;
   font-family: monospace;
   font-weight: bold;
   font-size: 12px;
@@ -52,12 +52,15 @@
   color: #444;
 }
 .Editor .directive_block_opener {
-  border-bottom: 1px solid #DDD;
-  font-weight: bold;
+  border-top: 1px solid #DDD;
+  background: #F7F7F7;
 }
 .Editor .directive_block_closer {
-  border-top: 1px solid #DDD;
-  font-weight: bold;
+  border-bottom: 1px solid #DDD;
+  background: #F7F7F7;
+}
+.Editor .directive_block_code {
+  color: #555;
 }
 .Editor .error {
   background: rgba(255,0,0,0.2);
