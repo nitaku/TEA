@@ -29,6 +29,10 @@
 .Editor .CodeMirror {
   height: 100%;
   font-size: 12px;
+  font-family: sans-serif;
+}
+.Editor .CodeMirror-lines {
+  border-right: 1px solid #DDD;
 }
 
 .Editor .span {
@@ -44,6 +48,7 @@
 }
 .Editor .directive {
   background: #F7F7F7;
+  color: #444;
 }
 .Editor .directive_block_opener {
   border-bottom: 1px solid #DDD;
@@ -56,4 +61,8 @@
 .Editor .error {
   background: rgba(255,0,0,0.2);
   border-bottom: 2px solid red;
+}
+.Editor .code {
+  font-family: monospace;
+  font-size: 11px;
 }

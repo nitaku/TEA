@@ -76,25 +76,26 @@ Editor = Backbone.D3View.extend
 
     # react to parse events to do the syntax highlighting
     @listenTo @model, 'parse_span', (span) ->
-      editor.markText {line: span.code_line, ch: span.code_start}, {line: span.code_line, ch: span.code_start+1}, {className: 'angle_bracket'}
-      editor.markText {line: span.code_line, ch: span.code_start+span.content.length+1}, {line: span.code_line, ch: span.code_start+span.content.length+2}, {className: 'angle_bracket'}
+      editor.markText {line: span.code_line, ch: span.code_start}, {line: span.code_line, ch: span.code_start+1}, {className: 'angle_bracket code'}
+      editor.markText {line: span.code_line, ch: span.code_start+span.content.length+1}, {line: span.code_line, ch: span.code_start+span.content.length+2}, {className: 'angle_bracket code'}
 
       editor.markText {line: span.code_line, ch: span.code_start}, {line: span.code_line, ch: span.code_start+span.content.length+2}, {className: 'span'}
 
     @listenTo @model, 'parse_about', (about) ->
-      editor.markText {line: about.code_line, ch: about.code_end-1}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket'}
-      editor.markText {line: about.code_line, ch: about.code_end-about.id.length-2}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket'}
+      editor.markText {line: about.code_line, ch: about.code_end-1}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket code'}
+      editor.markText {line: about.code_line, ch: about.code_end-about.id.length-2}, {line: about.code_line, ch: about.code_end}, {className: 'round_bracket code'}
 
     @listenTo @model, 'parse_directive', (directive) ->
       editor.addLineClass directive.code_line, 'background', 'directive'
+      editor.addLineClass directive.code_line, 'text', 'directive code'
 
     @listenTo @model, 'parse_directive_block_opener', (opener) ->
       editor.addLineClass opener.code_line, 'background', 'directive_block_opener'
-      editor.addLineClass opener.code_line, 'text', 'directive_block_opener'
+      editor.addLineClass opener.code_line, 'text', 'directive_block_opener code'
 
     @listenTo @model, 'parse_directive_block_closer', (closer) ->
       editor.addLineClass closer.code_line, 'background', 'directive_block_closer'
-      editor.addLineClass closer.code_line, 'text', 'directive_block_closer'
+      editor.addLineClass closer.code_line, 'text', 'directive_block_closer code'
 
     @listenTo @model, 'parse_error', (message, details) ->
       error_marker = d3.select document.createElement('a')
