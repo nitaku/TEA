@@ -16,8 +16,19 @@ GraphView = Backbone.D3View.extend
 
     @d3el.classed 'GraphView', true
 
-    @vis = @d3el.append 'g'
     @defs = @d3el.append 'defs'
+
+    # zoom support
+    zoomable_layer = @d3el.append 'g'
+    zoom = d3.behavior.zoom()
+      .scaleExtent([-Infinity,Infinity])
+      .on 'zoom', () ->
+        zoomable_layer
+          .attr
+            transform: "translate(#{zoom.translate()})scale(#{zoom.scale()})"
+    @d3el.call zoom
+
+    @vis = zoomable_layer.append 'g'
 
     ### define arrow markers for graph links ###
     @defs.append('marker')
