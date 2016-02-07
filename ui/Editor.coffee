@@ -87,7 +87,7 @@ Editor = Backbone.D3View.extend
 
     @listenTo @model, 'parse_directive', (directive) ->
       editor.addLineClass directive.code_line, 'background', 'directive'
-      editor.addLineClass directive.code_line, 'text', 'directive code'
+      editor.addLineClass directive.code_line, 'text', 'code'
 
     @listenTo @model, 'parse_directive_block_opener', (opener) ->
       editor.addLineClass opener.code_line, 'background', 'directive_block_opener'
