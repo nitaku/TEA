@@ -34,6 +34,8 @@ Editor = Backbone.D3View.extend
         editor.focus()
       .style
         color: '#1f77b4'
+      .attr
+        title: 'Insert a new span, or transform the selected text into a span.'
 
     bar.append 'button'
       .text '( )'
@@ -45,6 +47,8 @@ Editor = Backbone.D3View.extend
         editor.focus()
       .style
         color: '#ff7f0e'
+      .attr
+        title: 'Insert a new about reference. Use it after a span or in a triple subject.'
 
     editor.on 'change', () =>
       # clear syntax highlighting
