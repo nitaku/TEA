@@ -139,6 +139,9 @@ GraphView = Backbone.D3View.extend
           class: 'label'
           dy: '0.35em'
 
+      span.append 'title'
+        .text (d) -> d.content
+
       # locus links
       link_layer.append 'path'
         .datum s
@@ -164,6 +167,9 @@ GraphView = Backbone.D3View.extend
           .attr
             class: 'label'
             dy: '0.35em'
+
+        span.append 'title'
+          .text (d) -> d.content
 
         # locus links
         link_layer.append 'path'
