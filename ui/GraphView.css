@@ -9,7 +9,7 @@
 .GraphView .link {
   fill: none;
   stroke: #CCC;
-  stroke-width: 4px;
+  stroke-width: 3px;
   marker-end: url(#end-arrow);
 }
 .GraphView #end-arrow {

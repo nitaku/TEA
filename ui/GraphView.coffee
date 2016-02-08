@@ -37,7 +37,7 @@ GraphView = Backbone.D3View.extend
       .attr
         id: 'end-arrow'
         viewBox: '0 0 10 10'
-        refX: 5+R
+        refX: 10+R
         refY: 5
         orient: 'auto'
     .append('path')
@@ -75,140 +75,163 @@ GraphView = Backbone.D3View.extend
 
     # layout
     about_groups_data = Object.keys(about_nodes).map (k) -> about_nodes[k]
-
+    max_span_y = 0
     about_groups_data.forEach (g,i) ->
-      g.x = 120
+      g.x = 140
       g.y = 2.5*R*d3.sum(about_groups_data[0...i], (g) -> Math.max(g.spans.length,g.popairs.length))
 
       g.spans.forEach (s,i) ->
-        s.x = 40
+        s.x = 70
         s.y = g.y + 2.5*R*i
         s.parent = g
+        max_span_y = Math.max max_span_y, s.y
 
       g.popairs.forEach (p,i) ->
         p.x = 260
         p.y = g.y + 2.5*R*i
         p.parent = g
 
+    spans_wo_about = @model.spans.filter((s) => not s.about?).map (s,i) => {
+      x: 70,
+      y: max_span_y + 2.5*R*(i+1),
+      content: @model.plain_text[s.start...s.end]
+    }
+
     # visualization
-    about_groups = @vis.selectAll '.about_group'
-      .data about_groups_data, (d) -> d.id
-
-    enter_about_groups = about_groups.enter().append 'g'
-      .attr
-        class: 'about_group'
-
-    about_links_g = enter_about_groups.append 'g'
-    resource_links_g = enter_about_groups.append 'g'
-
-    enter_about_resource = enter_about_groups.append 'g'
-      .attr
-        class: 'node about_resource'
-        transform: (g) -> "translate(#{g.x},#{g.y})"
-
-    enter_about_resource.append 'circle'
-      .attr
-        r: R
-
-    enter_about_resource.append 'text'
-      .text (d) -> "(#{d.id})"
-      .attr
-        class: 'label'
-        dy: '0.35em'
-
-    about_groups.exit()
+    @vis.selectAll '*'
       .remove()
 
-    # about links
-    about_links = about_links_g.selectAll '.about_link'
-      .data (d) -> d.spans
+    link_layer = @vis.append 'g'
+    node_layer = @vis.append 'g'
 
-    enter_about_links = about_links.enter().append 'path'
+    content_d = {x:0, y:0}
+    content = node_layer.append 'g'
+      .datum content_d
       .attr
-        class: 'about_link link'
-
-    about_links
-      .attr
-        d: (d) -> "M#{d.x} #{d.y} L#{d.parent.x} #{d.parent.y}"
-
-    about_links.exit()
-      .remove()
-
-    # resource links
-    resource_links = resource_links_g.selectAll '.resource_link'
-      .data (d) -> d.popairs
-
-    enter_resource_links = resource_links.enter().append 'path'
-      .attr
-        class: 'resource_link link'
-
-    resource_links
-      .attr
-        d: (d) -> "M#{d.parent.x} #{d.parent.y} L#{d.x} #{d.y}"
-
-    resource_links.exit()
-      .remove()
-
-    # spans
-    spans = about_groups.selectAll '.span'
-      .data (d) -> d.spans
-
-    enter_spans = spans.enter().append 'g'
-      .attr
-        class: 'node span'
-
-    enter_spans.append 'circle'
-      .attr
-        r: R
-
-    enter_spans.append 'text'
-      .text '< >'
-      .attr
-        class: 'label'
-        dy: '0.35em'
-
-    spans
-      .attr
+        class: 'content node'
         transform: (d,i) -> "translate(#{d.x},#{d.y})"
 
-    spans.exit()
-      .remove()
-
-    # resources
-    resources = about_groups.selectAll '.resource'
-      .data (d) -> d.popairs
-
-    enter_resources = resources.enter().append 'g'
-      .attr
-        class: 'node resource'
-
-    enter_resources.append 'circle'
+    content.append 'circle'
       .attr
         r: R
 
-    enter_as = enter_resources.append 'a'
-      .attr
-        class: 'valid'
-        'xlink:href': (d) ->
-          splitted = (''+d.object).split ':'
-          if splitted[0] is 'http'
-            return d.object
-          else
-            return prefixes[splitted[0]] + splitted[1]
-
-    enter_as.append 'text'
-      .text (d) ->
-        if d.object.length > 40
-          return d.object[0..15] + '...' + d.object[d.object.length-15..d.object.length]
-        else
-          return d.object
+    content.append 'text'
+      .text 'CONTENT'
       .attr
         class: 'label'
         dy: '0.35em'
 
-    resources
-      .attr
-        transform: (d,i) -> "translate(#{d.x},#{d.y})"
+    spans_wo_about.forEach (s) ->
+      # spans
+      span = node_layer.append 'g'
+        .datum s
+        .attr
+          class: 'node span'
+          transform: (d,i) -> "translate(#{d.x},#{d.y})"
 
-    resources.exit()
-      .remove()
+      span.append 'circle'
+        .attr
+          r: R
+
+      span.append 'text'
+        .text '< >'
+        .attr
+          class: 'label'
+          dy: '0.35em'
+
+      # locus links
+      link_layer.append 'path'
+        .datum s
+        .attr
+          class: 'locus_link link'
+          d: (d) -> "M#{d.x} #{d.y} L#{content_d.x} #{content_d.y}"
+
+    about_groups_data.forEach (g) ->
+      g.spans.forEach (s) ->
+        # spans
+        span = node_layer.append 'g'
+          .datum s
+          .attr
+            class: 'node span'
+            transform: (d,i) -> "translate(#{d.x},#{d.y})"
+
+        span.append 'circle'
+          .attr
+            r: R
+
+        span.append 'text'
+          .text '< >'
+          .attr
+            class: 'label'
+            dy: '0.35em'
+
+        # locus links
+        link_layer.append 'path'
+          .datum s
+          .attr
+            class: 'locus_link link'
+            d: (d) -> "M#{d.x} #{d.y} L#{content_d.x} #{content_d.y}"
+
+        # about links
+        link_layer.append 'path'
+          .datum s
+          .attr
+            class: 'about_link link'
+            d: (d) -> "M#{d.x} #{d.y} L#{d.parent.x} #{d.parent.y}"
+
+      # about resources
+      about_resource = node_layer.append 'g'
+        .datum g
+        .attr
+          class: 'node about_resource'
+          transform: (g) -> "translate(#{g.x},#{g.y})"
+
+      about_resource.append 'circle'
+        .attr
+          r: R
+
+      about_resource.append 'text'
+        .text (d) -> "(#{d.id})"
+        .attr
+          class: 'label'
+          dy: '0.35em'
+
+      g.popairs.forEach (p) ->
+        # resources
+        resource = node_layer.append 'g'
+          .datum p
+          .attr
+            class: 'node resource'
+            transform: (d,i) -> "translate(#{d.x},#{d.y})"
+
+        resource.append 'circle'
+          .attr
+            r: R
+
+        a = resource.append 'a'
+          .attr
+            class: 'valid'
+            target: '_blank'
+            'xlink:href': (d) ->
+              splitted = (''+d.object).split ':'
+              if splitted[0] is 'http'
+                return d.object
+              else
+                return prefixes[splitted[0]] + splitted[1]
+
+        a.append 'text'
+          .text (d) ->
+            if d.object.length > 40
+              return d.object[0..15] + '...' + d.object[d.object.length-15..d.object.length]
+            else
+              return d.object
+          .attr
+            class: 'label'
+            dy: '0.35em'
+
+        # predicate link
+        link_layer.append 'path'
+          .datum p
+          .attr
+            class: 'resource_link link'
+            d: (d) -> "M#{d.parent.x} #{d.parent.y} L#{d.x} #{d.y}"

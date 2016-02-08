@@ -281,6 +281,9 @@ Document = Backbone.Model.extend
       }
       @abouts.push about
 
+      # reverse pointer from span to about
+      span.about = about
+
       @trigger('parse_about', about)
 
       return about
