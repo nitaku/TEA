@@ -34,7 +34,7 @@ Document = Backbone.Model.extend
         : EOF
         | Code EOF
         | CodeDirectiveBlocks EOF
-        | CodeDirectiveBlocks Code EOF
+        | CodeDirectiveBlocks NEWLINE Code EOF
         ;
 
       CodeDirectiveBlocks
