@@ -221,7 +221,6 @@ GraphView = Backbone.D3View.extend
           .attr
             transform: (d) -> "translate(#{(d.source.x+d.target.x)/2} #{(d.source.y+d.target.y)/2}) rotate(#{ Math.atan2((d.target.y-d.source.y),(d.target.x-d.source.x))/Math.PI/2*360 }) translate(0,-5)"
 
-    enter_nodes
-      .call(d3cola.drag)
+        d3cola.stop()
 
-    d3cola.start(100,30,30)
+    d3cola.start(30,30,100)
