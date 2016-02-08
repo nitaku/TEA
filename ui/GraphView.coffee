@@ -105,7 +105,7 @@ GraphView = Backbone.D3View.extend
         graph.constraints.push {
           axis: 'x',
           left: n1.i,
-          right: n2.i,
+          right: if n2? then n2.i else 0,
           gap: if depth < 2 then 5*R else 8*R
         }
 
