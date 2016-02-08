@@ -1,6 +1,7 @@
 Editor = Backbone.D3View.extend
   initialize: () ->
     @d3el.classed 'Editor', true
+    @save = _.throttle (() => @model.save()), 5000, true
 
     bar = @d3el.append 'div'
       .attr
@@ -155,9 +156,7 @@ Editor = Backbone.D3View.extend
         code: editor.getValue()
 
       @model.parse()
-
-      # TODO debounce this
-      @model.save()
+      @save()
 
     # write the code into the editor when is loaded from the server
     @listenTo @model, 'sync', () =>
