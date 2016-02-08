@@ -28,6 +28,26 @@ Editor = Backbone.D3View.extend
 
     # create the toolbar buttons
     bar.append 'button'
+      .text 'Undo'
+      .on 'click', () =>
+        editor.execCommand('undo')
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Cancel the last change.'
+
+    bar.append 'button'
+      .text 'Redo'
+      .on 'click', () =>
+        editor.execCommand('redo')
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Redo the last change.'
+
+    bar.append 'button'
       .text '< >'
       .on 'click', () =>
         editor.replaceSelection '<' + editor.getSelection() + '>' # FIXME support more than one selection
