@@ -235,3 +235,10 @@ GraphView = Backbone.D3View.extend
           .attr
             class: 'resource_link link'
             d: (d) -> "M#{d.parent.x} #{d.parent.y} L#{d.x} #{d.y}"
+
+        link_layer.append 'text'
+          .datum p
+          .text (p) -> p.predicate
+          .attr
+            class: 'link_label'
+            transform: (d) -> "translate(#{(d.parent.x+d.x)/2} #{(d.parent.y+d.y)/2}) rotate(#{ Math.atan2((d.y-d.parent.y),(d.x-d.parent.x))/Math.PI/2*360 }) translate(0,-5)"
