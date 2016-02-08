@@ -23,10 +23,46 @@ Editor = Backbone.D3View.extend
     editor = CodeMirror wrapper.node(), {
       lineNumbers: false,
       gutters: ['error_gutter'],
-      value: @model.attributes.code
+      value: @model.attributes.code,
+      readOnly: 'nocursor'
     }
 
     # create the toolbar buttons
+    bar.append 'button'
+      .text 'Edit'
+      .on 'click', () =>
+        editor.setOption('readOnly', false)
+        editor.focus()
+        d3.selectAll 'button'
+          .attr
+            disabled: null
+      .style
+        color: '#555'
+      .attr
+        title: 'Start editing the document.'
+
+    bar.append 'button'
+      .text 'Undo'
+      .on 'click', () =>
+        editor.execCommand('undo')
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Cancel the last change.'
+        disabled: true
+
+    bar.append 'button'
+      .text 'Redo'
+      .on 'click', () =>
+        editor.execCommand('redo')
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Redo the last change.'
+        disabled: true
+
     bar.append 'button'
       .text '< >'
       .on 'click', () =>
@@ -36,6 +72,7 @@ Editor = Backbone.D3View.extend
         color: '#1f77b4'
       .attr
         title: 'Insert a new span, or transform the selected text into a span.'
+        disabled: true
 
     bar.append 'button'
       .text '( )'
@@ -48,6 +85,7 @@ Editor = Backbone.D3View.extend
         color: '#ff7f0e'
       .attr
         title: 'Insert a new about reference.\nUse it after a span or in a triple subject.'
+        disabled: true
 
     bar.append 'button'
       .text '+++'
@@ -60,6 +98,7 @@ Editor = Backbone.D3View.extend
         color: '#555'
       .attr
         title: 'Insert a new block for RDF triples.'
+        disabled: true
 
     bar.append 'button'
       .text 'sameAs'
@@ -72,6 +111,7 @@ Editor = Backbone.D3View.extend
         color: '#555'
       .attr
         title: 'Insert a new RDF triple with a owl:sameAs predicate and a DBPedia resource as object.\nUse it within a +++ block.'
+        disabled: true
 
     bar.append 'button'
       .text 'topicOf'
@@ -84,6 +124,7 @@ Editor = Backbone.D3View.extend
         color: '#555'
       .attr
         title: 'Insert a new RDF triple with a foaf:isPrimaryTopicOf predicate and an HTTP url as object.\nUse it within a +++ block.'
+        disabled: true
 
     bar.append 'button'
       .text 'comment'
@@ -96,6 +137,7 @@ Editor = Backbone.D3View.extend
         color: '#555'
       .attr
         title: 'Insert a new RDF triple with a rdfs:comment predicate and a string literal as object.\nUse it within a +++ block.'
+        disabled: true
 
     editor.on 'change', () =>
       # clear syntax highlighting
