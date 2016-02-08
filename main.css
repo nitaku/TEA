@@ -12,9 +12,14 @@ body {
 }
 
 #navigator {
-  width: 80px;
+  width: 100px;
   box-sizing: border-box;
-  border-right: 2px solid gray;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  direction: rtl;
+}
+#navigator > * {
+  direction: ltr;
 }
 #editor {
   flex-grow: 4;

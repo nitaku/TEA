@@ -8,6 +8,7 @@
   color: #444;
   padding: 6px;
   cursor: pointer;
+  border-right: 2px solid gray;
 
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -16,12 +17,6 @@
   -ms-user-select: none;       /* IE/Edge */
   user-select: none;           /* non-prefixed version, currently
                                   not supported by any browser */
-
-  border: 2px solid transparent;
-
-  /* trick for displaying the selected item */
-  position: relative;
-  left: 3px;
 }
 
 .Navigator .item:hover {
@@ -37,8 +32,8 @@
   /* trick for displaying the selected item */
   background: #F7F7F7;
   border-right: 2px solid #F7F7F7;
-}
 
-.Navigator .item:first-child {
-  margin-top: 4px;
+  /* trick for displaying the selected item */
+  position: relative;
+  left: 2px;
 }
