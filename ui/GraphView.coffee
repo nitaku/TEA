@@ -1,4 +1,4 @@
-R = 18
+R = 14
 prefixes =
   rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   owl: 'http://www.w3.org/2002/07/owl#'
@@ -29,6 +29,8 @@ GraphView = Backbone.D3View.extend
     @d3el.call zoom
 
     @vis = zoomable_layer.append 'g'
+      .attr
+        transform: "translate(#{2.5*R},#{2.5*R})"
 
     ### define arrow markers for graph links ###
     @defs.append('marker')
@@ -45,182 +47,168 @@ GraphView = Backbone.D3View.extend
     @listenTo @model, 'change:graph', @render
 
   render: () ->
-    graph = @model.get 'graph'
+    about_nodes = {}
 
-    ### store the node index into the node itself ###
-    for n, i in graph.nodes
-      n.i = i
-
-    ### store neighbor nodes into each node ###
-    for n, i in graph.nodes
-      n.in_neighbors = []
-      n.out_neighbors = []
-
-    for l in graph.links
-      l.source.out_neighbors.push l.target
-      l.target.in_neighbors.push l.source
-
-    ### compute longest distances ###
-    topological_order = tsort(graph.links.map (l) -> [l.source.i, l.target.i])
-
-    for n in graph.nodes
-      n.longest_dist = -Infinity
-
-    # Root nodes have no incoming links
-    graph.nodes.forEach (n) ->
-      if n.in_neighbors.length is 0
-        n.longest_dist = switch n.type
-          when 'content' then 0
-          when 'about_resource' then 2
-
-    for i in topological_order # control direction
-      n = graph.nodes[i]
-      for nn in n.out_neighbors # control direction
-        if nn.longest_dist < n.longest_dist+1
-          nn.longest_dist = n.longest_dist+1
-
-    graph.constraints = []
-
-    ### create the alignment contraints ###
-    levels = _.uniq graph.nodes.map (n) -> n.longest_dist
-    levels.sort() # this seems to be necessary
-    levels.forEach (depth) ->
-      graph.constraints.push {
-        type: 'alignment',
-        axis: 'x',
-        offsets: graph.nodes.filter((n) -> n.longest_dist is depth).map (n) -> {
-          node: n.i,
-          offset: 0
+    @model.abouts.forEach (d) =>
+      if d.id not of about_nodes
+        about_nodes[d.id] = {
+          id: d.id,
+          spans: [{
+            content: @model.plain_text[d.span.start...d.span.end]
+          }],
+          popairs: []
         }
-      }
-
-    PAD_MULTIPLIER = 3.5
-
-    ### create the position contraints ###
-    levels.forEach (depth, i) ->
-      if i < levels.length-1
-        n1 = _.find graph.nodes, (n) -> n.longest_dist is depth
-        n2 = _.find graph.nodes, (n) -> n.longest_dist is depth+1
-
-        graph.constraints.push {
-          axis: 'x',
-          left: n1.i,
-          right: if n2? then n2.i else 0,
-          gap: if depth < 2 then 5*R else 8*R
+      else
+        about_nodes[d.id].spans.push {
+          content: @model.plain_text[d.span.start...d.span.end]
         }
 
-    ### create nodes and links ###
-    @vis.selectAll '.link'
-      .remove()
-    @vis.selectAll '.node'
-      .remove()
-    @vis.selectAll '.link_label'
-      .remove()
+    @model.directives.forEach (d) =>
+      if d.id not of about_nodes
+        about_nodes[d.id] = {
+          id: d.id,
+          spans: [],
+          popairs: d.popairs
+        }
+      else
+        about_nodes[d.id].popairs = about_nodes[d.id].popairs.concat d.popairs
 
-    links = @vis.selectAll '.link'
-      .data graph.links
+    # layout
+    about_groups_data = Object.keys(about_nodes).map (k) -> about_nodes[k]
 
-    enter_links = links
-      .enter().append 'line'
-        .attr
-          class: (d) -> "link #{d.type}"
+    about_groups_data.forEach (g,i) ->
+      g.x = 120
+      g.y = 2.5*R*d3.sum(about_groups_data[0...i], (g) -> Math.max(g.spans.length,g.popairs.length))
 
-    enter_links.append 'title'
-      .text (d) -> 'link'
+      g.spans.forEach (s,i) ->
+        s.x = 40
+        s.y = g.y + 2.5*R*i
+        s.parent = g
 
-    link_labels = @vis.selectAll '.link_label'
-      .data graph.links
+      g.popairs.forEach (p,i) ->
+        p.x = 260
+        p.y = g.y + 2.5*R*i
+        p.parent = g
 
-    link_labels.enter().append 'text'
-      .text (d) ->
-        if d.type is 'predicate'
-          return d.predicate
-        else
-          return d.type
+    # visualization
+    about_groups = @vis.selectAll '.about_group'
+      .data about_groups_data, (d) -> d.id
+
+    enter_about_groups = about_groups.enter().append 'g'
       .attr
-        class: 'link_label'
+        class: 'about_group'
 
-    nodes = @vis.selectAll '.node'
-      .data graph.nodes
+    about_links_g = enter_about_groups.append 'g'
+    resource_links_g = enter_about_groups.append 'g'
 
-    enter_nodes = nodes.enter().append 'g'
+    enter_about_resource = enter_about_groups.append 'g'
       .attr
-        class: (d) -> "node #{d.type}"
+        class: 'node about_resource'
+        transform: (g) -> "translate(#{g.x},#{g.y})"
 
-    enter_nodes.append 'circle'
+    enter_about_resource.append 'circle'
       .attr
         r: R
 
-    enter_as = enter_nodes.append 'a'
+    enter_about_resource.append 'text'
+      .text (d) -> "(#{d.id})"
       .attr
-        target: '_blank'
+        class: 'label'
+        dy: '0.35em'
 
-    enter_as.filter (d) -> d.type is 'resource'
+    about_groups.exit()
+      .remove()
+
+    # about links
+    about_links = about_links_g.selectAll '.about_link'
+      .data (d) -> d.spans
+
+    enter_about_links = about_links.enter().append 'path'
+      .attr
+        class: 'about_link link'
+
+    about_links
+      .attr
+        d: (d) -> "M#{d.x} #{d.y} L#{d.parent.x} #{d.parent.y}"
+
+    about_links.exit()
+      .remove()
+
+    # resource links
+    resource_links = resource_links_g.selectAll '.resource_link'
+      .data (d) -> d.popairs
+
+    enter_resource_links = resource_links.enter().append 'path'
+      .attr
+        class: 'resource_link link'
+
+    resource_links
+      .attr
+        d: (d) -> "M#{d.parent.x} #{d.parent.y} L#{d.x} #{d.y}"
+
+    resource_links.exit()
+      .remove()
+
+    # spans
+    spans = about_groups.selectAll '.span'
+      .data (d) -> d.spans
+
+    enter_spans = spans.enter().append 'g'
+      .attr
+        class: 'node span'
+
+    enter_spans.append 'circle'
+      .attr
+        r: R
+
+    enter_spans.append 'text'
+      .text '< >'
+      .attr
+        class: 'label'
+        dy: '0.35em'
+
+    spans
+      .attr
+        transform: (d,i) -> "translate(#{d.x},#{d.y})"
+
+    spans.exit()
+      .remove()
+
+    # resources
+    resources = about_groups.selectAll '.resource'
+      .data (d) -> d.popairs
+
+    enter_resources = resources.enter().append 'g'
+      .attr
+        class: 'node resource'
+
+    enter_resources.append 'circle'
+      .attr
+        r: R
+
+    enter_as = enter_resources.append 'a'
       .attr
         class: 'valid'
         'xlink:href': (d) ->
-          if d.type isnt 'resource'
-            return ''
-
-          splitted = (''+d.id).split ':'
+          splitted = (''+d.object).split ':'
           if splitted[0] is 'http'
-            return d.id
+            return d.object
           else
             return prefixes[splitted[0]] + splitted[1]
 
     enter_as.append 'text'
       .text (d) ->
-        switch d.type
-          when 'resource' then d.id
-          when 'content' then 'CONTENT'
-          when 'span' then "< >"
-          when 'about_resource' then "(#{d.id})"
+        if d.object.length > 40
+          return d.object[0..15] + '...' + d.object[d.object.length-15..d.object.length]
+        else
+          return d.object
       .attr
         class: 'label'
         dy: '0.35em'
 
-    ### cola layout ###
-    graph.nodes.forEach (v, i) ->
-      v.width = PAD_MULTIPLIER*R
-      v.height = PAD_MULTIPLIER*R
+    resources
+      .attr
+        transform: (d,i) -> "translate(#{d.x},#{d.y})"
 
-      # useful to untangle the graph
-      v.x = i
-      v.y = i
-
-    content = _.find graph.nodes, (d) -> d.type is 'content'
-    content.x = R + 20
-    content.y = @height/2
-    content.fixed = true
-
-    d3cola = cola.d3adaptor()
-      .size([@width, @height])
-      .linkDistance(60)
-      .constraints(graph.constraints)
-      .avoidOverlaps(true)
-      .nodes(graph.nodes)
-      .links(graph.links)
-      .on 'tick', () ->
-        ### update nodes and links  ###
-        nodes
-          .attr('transform', (d) -> "translate(#{d.x},#{d.y})")
-
-        links.filter (d) -> not d.inverted
-          .attr('x1', (d) -> d.source.x)
-          .attr('y1', (d) -> d.source.y)
-          .attr('x2', (d) -> d.target.x)
-          .attr('y2', (d) -> d.target.y)
-
-        links.filter (d) -> d.inverted
-          .attr('x1', (d) -> d.target.x)
-          .attr('y1', (d) -> d.target.y)
-          .attr('x2', (d) -> d.source.x)
-          .attr('y2', (d) -> d.source.y)
-
-        link_labels
-          .attr
-            transform: (d) -> "translate(#{(d.source.x+d.target.x)/2} #{(d.source.y+d.target.y)/2}) rotate(#{ Math.atan2((d.target.y-d.source.y),(d.target.x-d.source.x))/Math.PI/2*360 }) translate(0,-5)"
-
-        d3cola.stop()
-
-    d3cola.start(30,30,100)
+    resources.exit()
+      .remove()
