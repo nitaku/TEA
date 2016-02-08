@@ -47,7 +47,7 @@ Editor = Backbone.D3View.extend
       .style
         color: '#ff7f0e'
       .attr
-        title: 'Insert a new about reference. Use it after a span or in a triple subject.'
+        title: 'Insert a new about reference.\nUse it after a span or in a triple subject.'
 
     bar.append 'button'
       .text '+++'
@@ -71,7 +71,7 @@ Editor = Backbone.D3View.extend
       .style
         color: '#555'
       .attr
-        title: 'Insert a new RDF triple with a owl:sameAs predicate and a DBPedia resource as object. Use it within a +++ block.'
+        title: 'Insert a new RDF triple with a owl:sameAs predicate and a DBPedia resource as object.\nUse it within a +++ block.'
 
     bar.append 'button'
       .text 'topicOf'
@@ -83,7 +83,7 @@ Editor = Backbone.D3View.extend
       .style
         color: '#555'
       .attr
-        title: 'Insert a new RDF triple with a foaf:isPrimaryTopicOf predicate and an HTTP url as object. Use it within a +++ block.'
+        title: 'Insert a new RDF triple with a foaf:isPrimaryTopicOf predicate and an HTTP url as object.\nUse it within a +++ block.'
 
     bar.append 'button'
       .text 'comment'
@@ -95,7 +95,7 @@ Editor = Backbone.D3View.extend
       .style
         color: '#555'
       .attr
-        title: 'Insert a new RDF triple with a rdfs:comment predicate and a string literal as object. Use it within a +++ block.'
+        title: 'Insert a new RDF triple with a rdfs:comment predicate and a string literal as object.\nUse it within a +++ block.'
 
     editor.on 'change', () =>
       # clear syntax highlighting
