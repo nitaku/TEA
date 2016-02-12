@@ -21,6 +21,9 @@
   font-size: 12px;
   margin-right: 4px;
 }
+.Editor .bar > *:disabled {
+  opacity: 0.5;
+}
 .Editor .editor_div {
   flex-grow: 1;
   height: 0;
