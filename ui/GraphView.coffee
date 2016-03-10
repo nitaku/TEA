@@ -8,6 +8,8 @@ prefixes =
   dbr: 'http://dbpedia.org/resource/'
   wiki: 'http://en.wikipedia.org/wiki/'
   cll: 'http://claviusontheweb.it/lexicon/'
+  lvont: 'http://lexvo.org/ontology#'
+  lexvo: 'http://lexvo.org/id/'
 
 GraphView = Backbone.D3View.extend
   initialize: () ->
