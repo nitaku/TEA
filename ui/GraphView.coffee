@@ -7,6 +7,7 @@ prefixes =
   dbo: 'http://dbpedia.org/ontology/'
   dbr: 'http://dbpedia.org/resource/'
   wiki: 'http://en.wikipedia.org/wiki/'
+  cll: 'http://claviusontheweb.it/lexicon/'
 
 GraphView = Backbone.D3View.extend
   initialize: () ->
