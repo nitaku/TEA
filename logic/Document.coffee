@@ -383,7 +383,7 @@ Document = Backbone.Model.extend
   sync: (method, model, options) ->
     switch method
       when 'read'
-        return d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.0/ClaviusGraph/load'
+        return d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.1/ClaviusGraph/load'
           # .header('Content-Type', 'application/json') FIXME server does not accept this
           .post JSON.stringify({id: model.attributes.id}), (error, d) => # FIXME passing the body as a string seems strange
             throw error if error
@@ -394,7 +394,7 @@ Document = Backbone.Model.extend
 
             @trigger 'sync'
       when 'update'
-        return d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.0/ClaviusGraph/update'
+        return d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.1/ClaviusGraph/update'
           # .header('Content-Type', 'application/json') FIXME server does not accept this
           .post JSON.stringify({id: model.attributes.id, code: model.attributes.code, name: model.attributes.name}), (error, d) => # FIXME passing the body as a string seems strange
             throw error if error
