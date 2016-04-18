@@ -102,6 +102,19 @@ Editor = Backbone.D3View.extend
         disabled: true
 
     bar.append 'button'
+      .text 'term'
+      .on 'click', () =>
+        editor.replaceSelection '(subj) its:termInfoRef cll:math/' # FIXME support more than one selection
+        pos = editor.getCursor()
+        editor.setSelection {line: pos.line, ch: 1}, {line: pos.line, ch: 5}
+        editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Insert a new RDF triple with a its:termInfoRef predicate and an HTTP url as object.\nUse it within a +++ block.'
+        disabled: true
+
+    bar.append 'button'
       .text 'sameAs'
       .on 'click', () =>
         editor.replaceSelection '(subj) owl:sameAs dbr:' # FIXME support more than one selection
