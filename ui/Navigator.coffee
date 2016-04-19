@@ -33,15 +33,7 @@ Navigator = Backbone.D3View.extend
             class: 'external_link'
           .append('a')
             .attr
-              href: (d) -> 
-                external_links = [
-                  "http://claviusontheweb.it/dualView/?docId=42",
-                  "http://claviusontheweb.it/dualView/?docId=44",
-                  "http://claviusontheweb.it/dualView/?docId=315",
-                  "http://claviusontheweb.it/dualView/?docId=327",
-                  "http://claviusontheweb.it/dualView/?docId=319"
-                ]
-                external_links[(d.attributes.name.split(' ')[1]-1)%5]
+              href: (d) -> "http://claviusontheweb.it/dualView/?docId=#{d.attributes.name.split('_')[1]}"
               target: '_blank'
             .style
               color: 'gray'

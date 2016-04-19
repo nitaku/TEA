@@ -377,6 +377,45 @@ Document = Backbone.Model.extend
 
       @set
         graph: graph
+
+      # create triples (transition to new data model)
+      prefixes =
+        rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+        owl: 'http://www.w3.org/2002/07/owl#'
+        rdfs: 'http://www.w3.org/2000/01/rdf-schema#'
+        foaf: 'http://xmlns.com/foaf/0.1/'
+        dbo: 'http://dbpedia.org/ontology/'
+        dbr: 'http://dbpedia.org/resource/'
+        wiki: 'http://en.wikipedia.org/wiki/'
+        cll: 'http://claviusontheweb.it/lexicon/'
+        lvont: 'http://lexvo.org/ontology#'
+        lexvo: 'http://lexvo.org/id/'
+
+      urify = (d) ->
+        splitted = (''+d).split ':'
+        if splitted.length != 2 or splitted[0] is 'http'
+          return d
+        else
+          return prefixes[splitted[0]] + splitted[1]
+
+      @triples = []
+      @spans.forEach (s) =>
+        try
+          s.about.directives.forEach (d) =>
+            d.popairs.forEach (p) =>
+              @triples.push {
+                start: s.start,
+                end: s.end,
+                subject: d.id,
+                predicate: p.predicate,
+                object: urify(p.object)
+              }
+        catch error
+          console.debug error
+
+      # filter only term triples
+      @spans = @spans.filter (d) -> d.predicate is 'its:termInfoRef'
+
     catch error
       console.debug error
 
@@ -392,11 +431,13 @@ Document = Backbone.Model.extend
             @set
               code: d.code
 
+            @idDoc = d.idDoc
+
             @trigger 'sync'
       when 'update'
         return d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.2/ClaviusGraph/update'
           # .header('Content-Type', 'application/json') FIXME server does not accept this
-          .post JSON.stringify({id: model.attributes.id, code: model.attributes.code, name: model.attributes.name}), (error, d) => # FIXME passing the body as a string seems strange
+          .post JSON.stringify({id: model.attributes.id, idDoc: model.idDoc, code: model.attributes.code, name: model.attributes.name, text: model.plain_text, triples: model.triples}), (error, d) => # FIXME passing the body as a string seems strange
             throw error if error
 
             # ignore all the other fields
