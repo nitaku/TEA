@@ -1,7 +1,7 @@
 Editor = Backbone.D3View.extend
   initialize: () ->
     @d3el.classed 'Editor', true
-    @save = _.throttle (() => @model.save()), 5000, true
+    @save = _.throttle (() => @model.save()), 10000, true
 
     bar = @d3el.append 'div'
       .attr
