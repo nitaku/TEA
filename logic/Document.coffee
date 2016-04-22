@@ -414,7 +414,7 @@ Document = Backbone.Model.extend
           console.debug error
 
       # filter only term triples
-      @spans = @spans.filter (d) -> d.predicate is 'its:termInfoRef'
+      @triples = @triples.filter (d) -> d.predicate is 'its:termInfoRef'
 
     catch error
       console.debug error
