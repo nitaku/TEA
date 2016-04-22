@@ -22,6 +22,7 @@ Editor = Backbone.D3View.extend
 
     # create the CodeMirror editor
     editor = CodeMirror wrapper.node(), {
+      lineWrapping: true,
       lineNumbers: false,
       gutters: ['error_gutter'],
       value: @model.attributes.code,
