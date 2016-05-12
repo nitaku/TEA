@@ -5,6 +5,7 @@ Navigator = Backbone.D3View.extend
   initialize: (conf) ->
     @items = conf.items
     @selection = conf.selection
+    @doc_router = conf.doc_router
 
     @d3el.classed 'Navigator', true
 
@@ -24,22 +25,6 @@ Navigator = Backbone.D3View.extend
 
     listitems
       .classed 'selected', (d) => d.attributes.id is @selection.attributes.id
-      .on 'click', () ->
-        d3.selectAll '.external_link'
-          .remove()
-
-        d3.select(this).append('div')
-          .attr
-            class: 'external_link'
-          .append('a')
-            .attr
-              href: (d) -> "http://claviusontheweb.it/dualView/?docId=#{d.attributes.name.split('_')[1]}"
-              target: '_blank'
-            .style
-              color: 'gray'
-              'font-weight': 'normal'
-            .text 'link'
 
   on_item_clicked: (event, d) ->
-    @selection.set
-      id: d.attributes.id
+    @doc_router.navigate "doc/#{d.attributes.id}", {trigger: true}
