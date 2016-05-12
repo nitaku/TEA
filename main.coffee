@@ -2,34 +2,20 @@ doclist = new Items()
 
 sel = new ItemSelection()
 
+# client-side URI management
+doc_router = new DocRouter
+  selection: sel
+
+Backbone.history.start()
+
+
 navigator = new Navigator
   el: '#navigator'
   selection: sel
   items: doclist
-
+  doc_router: doc_router
+  
 doclist.fetch()
-
-sel.on 'change', () ->
-  # destroy the old editor
-  d3.select('#editor').selectAll '*'
-    .remove()
-
-  # destroy the old graph view
-  d3.select('#graph_view').selectAll '*'
-    .remove()
-
-  doc = new Document
-    id: sel.attributes.id
-
-  editor = new Editor
-    el: '#editor'
-    model: doc
-
-  graph_view = new GraphView
-    el: '#graph_view'
-    model: doc
-
-  doc.fetch()
 
 d3.select(document).on 'keyup', () ->
   if d3.event.altKey and d3.event.ctrlKey and d3.event.code is 'KeyN'
