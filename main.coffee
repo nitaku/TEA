@@ -6,7 +6,7 @@ sel = new ItemSelection()
 doc_router = new DocRouter
   selection: sel
 
-Backbone.history.start()
+Backbone.history.start() # FIXME enable HistoryAPI
 
 
 navigator = new Navigator
@@ -14,7 +14,7 @@ navigator = new Navigator
   selection: sel
   items: doclist
   doc_router: doc_router
-  
+
 doclist.fetch()
 
 d3.select(document).on 'keyup', () ->
