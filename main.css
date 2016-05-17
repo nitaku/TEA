@@ -17,7 +17,7 @@ body {
   box-sizing: border-box;
   border-right: 2px solid gray;
 }
-#graph_view {
+#annotation_view {
   flex-grow: 3;
   width: 0;
 }
