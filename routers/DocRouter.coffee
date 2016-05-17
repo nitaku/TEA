@@ -4,6 +4,7 @@ DocRouter = Backbone.Router.extend
 
   initialize: (conf) ->
     @selection = conf.selection
+    @app = conf.app
 
   open_document: (doc_id) ->
     doc_id = parseInt(doc_id)
@@ -17,7 +18,7 @@ DocRouter = Backbone.Router.extend
       .remove()
 
     # destroy the old graph view
-    d3.select('#graph_view').selectAll '*'
+    d3.select('#annotation_view').selectAll '*'
       .remove()
 
     doc = new Document
@@ -25,6 +26,11 @@ DocRouter = Backbone.Router.extend
 
     editor = new Editor
       el: '#editor'
+      breakdown_grammar: @app.breakdown_grammar
       model: doc
 
-    doc.fetch()
+    annotation_view = new AnnotationView
+      el: '#annotation_view'
+      model: doc
+
+    # doc.fetch()
