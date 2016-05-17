@@ -1,6 +1,6 @@
 DocRouter = Backbone.Router.extend
   routes:
-    'docs/:doc_id': 'open_document'
+    'docs/:id': 'open_document'
 
   open_document: (id) ->
     id = parseInt(id)
