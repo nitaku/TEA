@@ -1,0 +1,39 @@
+.AnnotationView {
+  overflow-y: auto;
+}
+
+.AnnotationView .annotation {
+  font-family: sans-serif;
+  font-size: 12px;
+  margin: 4px;
+  border: 1px solid #DFDFDF;
+  border-collapse: collapse;
+}
+
+.AnnotationView td {
+  padding: 4px;
+}
+
+.AnnotationView .annotation .id {
+  color: #555;
+  min-width: 14px;
+}
+.AnnotationView .annotation .span {
+  background: #B9DBF3;
+}
+.AnnotationView .annotation .predicate {
+  color: #444;
+}
+.AnnotationView .annotation .object.literal {
+  background: #DDD;
+}
+.AnnotationView .annotation .object.uri {
+  background: #DED;
+}
+.AnnotationView .annotation .object a {
+  color: black;
+  text-decoration: none;
+}
+.AnnotationView .annotation .object a:hover {
+  text-decoration: underline;
+}
