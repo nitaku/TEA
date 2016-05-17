@@ -8,6 +8,69 @@ Editor = Backbone.D3View.extend
   initialize: (conf) ->
     @d3el.classed 'Editor', true
 
+    # create the toolbar buttons
+    bar = @d3el.append 'div'
+      .attr
+        class: 'bar'
+
+    bar.append 'button'
+      .text 'Undo'
+      .on 'click', () =>
+        @editor.execCommand('undo')
+        @editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Cancel the last change.'
+
+    bar.append 'button'
+      .text 'Redo'
+      .on 'click', () =>
+        @editor.execCommand('redo')
+        @editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Redo the last change.'
+
+    bar.append 'button'
+      .text '<< >>'
+      .on 'click', () =>
+        selection = @editor.getSelection()
+        @editor.replaceSelection '<id<' + selection + '>id>' # FIXME support more than one selection
+        pos = @editor.getCursor()
+        
+        @editor.setSelections [{anchor: {line: pos.line, ch: pos.ch-3}, head: {line: pos.line, ch:  pos.ch-1}}, {anchor: {line: pos.line, ch: pos.ch-selection.length-7}, head: {line: pos.line, ch:  pos.ch-selection.length-5}}]
+        @editor.focus()
+      .style
+        color: '#1f77b4'
+      .attr
+        title: 'Insert a new span, or transform the selected text into a span.'
+
+    bar.append 'button'
+      .text '+++'
+      .on 'click', () =>
+        @editor.replaceSelection '+++\nsubj pred obj\n+++' # FIXME support more than one selection
+        pos = @editor.getCursor()
+        @editor.setSelection {line: pos.line-1, ch: 0}, {line: pos.line-1, ch: 15}
+        @editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Insert a new block for RDF triples.'
+
+    bar.append 'button'
+      .text 'triple'
+      .on 'click', () =>
+        @editor.replaceSelection 'subj pred obj' # FIXME support more than one selection
+        pos = @editor.getCursor()
+        @editor.setSelection {line: pos.line, ch: 1}, {line: pos.line, ch: 5}
+        @editor.focus()
+      .style
+        color: '#555'
+      .attr
+        title: 'Insert a new RDF triple.\nUse it within a +++ block.'
+
     # Chrome bug workaround (https://github.com/codemirror/CodeMirror/issues/3679)
     editor_div = @d3el.append 'div'
       .attr

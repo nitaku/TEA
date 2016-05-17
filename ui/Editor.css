@@ -1,3 +1,27 @@
+.Editor {
+  display: flex;
+  flex-direction: column;
+}
+.Editor .editor_div {
+  flex-grow: 1;
+  height: 0;
+}
+
+.Editor .bar {
+  height: 22px;
+  display: flex;
+  flex-direction: row;
+  padding: 4px;
+  border-bottom: 1px solid gray;
+}
+.Editor .bar > * {
+  min-width: 38px;
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 12px;
+  margin-right: 4px;
+}
+
 .Editor .status_bar {
   height: 22px;
   background: #DDD;
@@ -9,15 +33,6 @@
 }
 .Editor .error {
   background: #F77;
-}
-
-.Editor {
-  display: flex;
-  flex-direction: column;
-}
-.Editor .editor_div {
-  flex-grow: 1;
-  height: 0;
 }
 
 .Editor .CodeMirror {
