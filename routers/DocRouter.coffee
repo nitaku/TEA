@@ -27,8 +27,4 @@ DocRouter = Backbone.Router.extend
       el: '#editor'
       model: doc
 
-    graph_view = new GraphView
-      el: '#graph_view'
-      model: doc
-
     doc.fetch()
