@@ -7,7 +7,7 @@ Editor = Backbone.D3View.extend
 
   initialize: (conf) ->
     @d3el.classed 'Editor', true
-    #@save = _.throttle (() => @model.save()), 10000, true
+    @save = _.throttle (() => @model.save()), 5000, true
 
     # create the toolbar buttons
     bar = @d3el.append 'div'
@@ -116,13 +116,12 @@ Editor = Backbone.D3View.extend
       @compile()
 
       @model.set 'code', @editor.getValue()
-      @model.save()
+      @save()
 
-    # write the code into the editor when is loaded from the server
+    # write the code into the editor when is loaded from the server for the first time
     @listenTo @model, 'sync', () =>
-      if @model.hasChanged('code')
-        @editor.setValue @model.attributes.code # this also fires the above 'change' callback
-
+      if @model.previous('code') is null
+        @editor.setValue @model.attributes.code
 
   render: () ->
     @editor.refresh()
