@@ -6,8 +6,6 @@ DocRouter = Backbone.Router.extend
     @app = conf.app
 
   open_document: (id) ->
-    id = parseInt(id)
-
     # FIXME these should be executed in an AppView module
     # destroy the old editor
     d3.select('#editor').selectAll '*'
@@ -29,4 +27,4 @@ DocRouter = Backbone.Router.extend
       el: '#annotation_view'
       model: doc
 
-    # doc.fetch()
+    doc.fetch()

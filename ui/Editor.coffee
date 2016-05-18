@@ -7,6 +7,7 @@ Editor = Backbone.D3View.extend
 
   initialize: (conf) ->
     @d3el.classed 'Editor', true
+    #@save = _.throttle (() => @model.save()), 10000, true
 
     # create the toolbar buttons
     bar = @d3el.append 'div'
@@ -107,14 +108,21 @@ Editor = Backbone.D3View.extend
     })
 
     @editor = CodeMirror wrapper.node(), {
-      lineWrapping: true,
-      value: ''
+      lineWrapping: true
     }
 
-    @editor.on 'change', () =>
+    # FIXME on dragend is also needed
+    @editor.on 'keyup', () =>
       @compile()
 
-    @compile()
+      @model.set 'code', @editor.getValue()
+      @model.save()
+
+    # write the code into the editor when is loaded from the server
+    @listenTo @model, 'sync', () =>
+      if @model.hasChanged('code')
+        @editor.setValue @model.attributes.code # this also fires the above 'change' callback
+
 
   render: () ->
     @editor.refresh()
