@@ -7,9 +7,15 @@ Editor = Backbone.D3View.extend
 
   initialize: (conf) ->
     @d3el.classed 'Editor', true
-    @save = _.throttle (() => @model.save()), 5000, true
+    @save = _.throttle (() =>
+      @model.save(null, {
+        success: () =>
+          @save_feedback_icon.classed 'hidden', true
+        error: () =>
+          @save_feedback_icon.classed 'hidden', false
+      })), 5000, true
 
-    # create the toolbar buttons
+    # create the toolbar
     bar = @d3el.append 'div'
       .attr
         class: 'bar'
@@ -40,7 +46,7 @@ Editor = Backbone.D3View.extend
         selection = @editor.getSelection()
         @editor.replaceSelection '<id<' + selection + '>id>' # FIXME support more than one selection
         pos = @editor.getCursor()
-        
+
         @editor.setSelections [{anchor: {line: pos.line, ch: pos.ch-3}, head: {line: pos.line, ch:  pos.ch-1}}, {anchor: {line: pos.line, ch: pos.ch-selection.length-7}, head: {line: pos.line, ch:  pos.ch-selection.length-5}}]
         @editor.focus()
       .style
@@ -71,6 +77,15 @@ Editor = Backbone.D3View.extend
         color: '#555'
       .attr
         title: 'Insert a new RDF triple.\nUse it within a +++ block.'
+
+    bar.append 'div'
+      .attr
+        class: 'spacer'
+
+    @save_feedback_icon = bar.append 'div'
+      .text "Error saving document!"
+      .attr
+        class: 'save_feedback_icon hidden'
 
     # Chrome bug workaround (https://github.com/codemirror/CodeMirror/issues/3679)
     editor_div = @d3el.append 'div'

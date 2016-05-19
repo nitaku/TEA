@@ -13,6 +13,7 @@
   flex-direction: row;
   padding: 4px;
   border-bottom: 1px solid gray;
+  background: #DDD;
 }
 .Editor .bar > * {
   min-width: 38px;
@@ -20,6 +21,19 @@
   font-weight: bold;
   font-size: 12px;
   margin-right: 4px;
+}
+.Editor .bar .spacer {
+  flex-grow: 1;
+}
+.Editor .bar .save_feedback_icon {
+  background: rgb(253, 255, 140);
+  border-radius: 3px;
+  border: 2px solid #F5BA13;
+  font-family: sans-serif;
+  padding: 2px;
+}
+.Editor .bar .save_feedback_icon.hidden {
+  display: none;
 }
 
 .Editor .status_bar {
