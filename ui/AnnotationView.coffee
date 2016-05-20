@@ -25,8 +25,8 @@ AnnotationView = Backbone.D3View.extend
         d.triples.forEach (t,i) ->
           if i > 0
             triples += '</tr><tr>'
-          object = if t.object_type is 'uri' then "<a href='#{t.object}'>#{t.object}</a>" else t.object
-          triples += "<td class='predicate'>#{t.predicate}</td><td class='object #{t.object_type}'>#{object}</td>"
+          object = if t.object_type is 'uri' then "<a href='#{t.object_uri}'>#{t.object}</a>" else '"'+t.object+'"'
+          triples += "<td class='predicate'><a href='#{t.predicate_uri}'>#{t.predicate}</a></td><td class='object #{t.object_type}'>#{object}</td>"
         # hide automatic IDs
         id = if d.id[0] is '_' then '' else d.id
         return "<tr><td class='id' rowspan='#{rowspan}'>#{id}</td><td rowspan='#{rowspan}' class='#{d.type}'>#{d.text.replace(/\n/g,'↵')}</td>#{triples}</tr>"

@@ -30,10 +30,10 @@
 .AnnotationView .annotation .object.uri {
   background: #DED;
 }
-.AnnotationView .annotation .object a {
+.AnnotationView .annotation a {
   color: black;
   text-decoration: none;
 }
-.AnnotationView .annotation .object a:hover {
+.AnnotationView .annotation a:hover {
   text-decoration: underline;
 }

@@ -15,8 +15,28 @@ Editor = Backbone.D3View.extend
           @save_feedback_icon.classed 'hidden', false
       })
 
+      # index the document
+      # FIXME this is temporary - index operations should be done from the server behind the scenes, whenever a document is saved
+      triples = []
+      @model.attributes.annotations.forEach (s) ->
+        triples = triples.concat s.triples.map (t) -> {
+          subject: t.subject,
+          predicate: t.predicate_uri,
+          object: t.object_uri,
+          start: s.start,
+          end: s.end
+        }
+
+      o = {
+        id: @model.attributes.index_id,
+        code: @model.attributes.code,
+        name: @model.attributes.label,
+        text: @model.attributes.text,
+        triples: triples
+      }
+
       d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusGraph/update'
-        .post JSON.stringify({id: @model.attributes.index_id, code: @model.attributes.code, name: @model.attributes.label, text: @model.attributes.text}), (error, d) => # FIXME passing the body as a string seems strange
+        .post JSON.stringify(o), (error, d) => # FIXME passing the body as a string seems strange
           throw error if error
       ), 5000, true
 
@@ -49,10 +69,23 @@ Editor = Backbone.D3View.extend
       .text '<< >>'
       .on 'click', () =>
         selection = @editor.getSelection()
-        @editor.replaceSelection '<id<' + selection + '>id>' # FIXME support more than one selection
-        pos = @editor.getCursor()
+        sels = @editor.listSelections() # FIXME support more than one selection
 
-        @editor.setSelections [{anchor: {line: pos.line, ch: pos.ch-3}, head: {line: pos.line, ch:  pos.ch-1}}, {anchor: {line: pos.line, ch: pos.ch-selection.length-7}, head: {line: pos.line, ch:  pos.ch-selection.length-5}}]
+        @editor.replaceSelection '<id<' + selection + '>id>' # FIXME support more than one selection
+
+        if sels[0].anchor.line < sels[0].head.line or sels[0].anchor.line == sels[0].head.line and sels[0].anchor.ch < sels[0].head.ch
+          start = sels[0].anchor
+          end = sels[0].head
+        else
+          start = sels[0].head
+          end = sels[0].anchor
+
+        end_offset = if start.line is end.line then 4 else 0
+
+        @editor.setSelections [
+          {anchor: {line: start.line, ch: start.ch+1}, head: {line: start.line, ch:  start.ch+3}},
+          {anchor: {line: end.line, ch: end.ch+1+end_offset}, head: {line: end.line, ch:  end.ch+3+end_offset}}
+        ]
         @editor.focus()
       .style
         color: '#1f77b4'
@@ -159,7 +192,9 @@ Editor = Backbone.D3View.extend
     try
       data = @parser.parse @editor.getValue()
       @spans_highlight(data.spans)
-      @model.set 'annotations', data.spans
+      @model.set
+        annotations: data.spans
+        text: data.plain_text
     catch e
       @status_bar.text "Line #{e.location.start.line}: #{e.message}"
       @status_bar.classed 'error', true
