@@ -18,6 +18,10 @@ DocRouter = Backbone.Router.extend
     doc = new Document
       id: id
 
+    image_view = new ImageView
+      el: '#image_view'
+      model: doc
+
     editor = new Editor
       el: '#editor'
       breakdown_grammar: @app.breakdown_grammar

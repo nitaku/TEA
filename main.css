@@ -11,6 +11,11 @@ body {
   flex-direction: row;
 }
 
+#image_view {
+  flex-grow: 3;
+  width: 0;
+  border-right: 2px solid gray;
+}
 #editor {
   flex-grow: 4;
   width: 0;
