@@ -13,7 +13,15 @@ Editor = Backbone.D3View.extend
           @save_feedback_icon.classed 'hidden', true
         error: () =>
           @save_feedback_icon.classed 'hidden', false
-      })), 5000, true
+      })
+
+      d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusGraph/update'
+        .post JSON.stringify({id: @model.attributes.idDoc, code: @model.attributes.code, name: @model.attributes.label, text: @model.attributes.text}), (error, d) => # FIXME passing the body as a string seems strange
+          throw error if error
+
+          console.log d
+
+      ), 5000, true
 
     # create the toolbar
     bar = @d3el.append 'div'
