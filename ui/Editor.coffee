@@ -69,10 +69,23 @@ Editor = Backbone.D3View.extend
       .text '<< >>'
       .on 'click', () =>
         selection = @editor.getSelection()
-        @editor.replaceSelection '<id<' + selection + '>id>' # FIXME support more than one selection
-        pos = @editor.getCursor()
+        sels = @editor.listSelections() # FIXME support more than one selection
 
-        @editor.setSelections [{anchor: {line: pos.line, ch: pos.ch-3}, head: {line: pos.line, ch:  pos.ch-1}}, {anchor: {line: pos.line, ch: pos.ch-selection.length-7}, head: {line: pos.line, ch:  pos.ch-selection.length-5}}]
+        @editor.replaceSelection '<id<' + selection + '>id>' # FIXME support more than one selection
+
+        if sels[0].anchor.line < sels[0].head.line or sels[0].anchor.line == sels[0].head.line and sels[0].anchor.ch < sels[0].head.ch
+          start = sels[0].anchor
+          end = sels[0].head
+        else
+          start = sels[0].head
+          end = sels[0].anchor
+
+        end_offset = if start.line is end.line then 4 else 0
+
+        @editor.setSelections [
+          {anchor: {line: start.line, ch: start.ch+1}, head: {line: start.line, ch:  start.ch+3}},
+          {anchor: {line: end.line, ch: end.ch+1+end_offset}, head: {line: end.line, ch:  end.ch+3+end_offset}}
+        ]
         @editor.focus()
       .style
         color: '#1f77b4'
