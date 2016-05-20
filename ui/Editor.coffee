@@ -15,8 +15,28 @@ Editor = Backbone.D3View.extend
           @save_feedback_icon.classed 'hidden', false
       })
 
+      # index the document
+      # FIXME this is temporary - index operations should be done from the server behind the scenes, whenever a document is saved
+      triples = []
+      @model.attributes.annotations.forEach (s) ->
+        triples = triples.concat s.triples.map (t) -> {
+          subject: t.subject,
+          predicate: t.predicate_uri,
+          object: t.object_uri,
+          start: s.start,
+          end: s.end
+        }
+
+      o = {
+        id: @model.attributes.index_id,
+        code: @model.attributes.code,
+        name: @model.attributes.label,
+        text: @model.attributes.text,
+        triples: triples
+      }
+
       d3.json 'http://wafi.iit.cnr.it:33065/ClaviusWeb-1.0.3/ClaviusGraph/update'
-        .post JSON.stringify({id: @model.attributes.index_id, code: @model.attributes.code, name: @model.attributes.label, text: @model.attributes.text}), (error, d) => # FIXME passing the body as a string seems strange
+        .post JSON.stringify(o), (error, d) => # FIXME passing the body as a string seems strange
           throw error if error
       ), 5000, true
 
@@ -159,7 +179,9 @@ Editor = Backbone.D3View.extend
     try
       data = @parser.parse @editor.getValue()
       @spans_highlight(data.spans)
-      @model.set 'annotations', data.spans
+      @model.set
+        annotations: data.spans
+        text: data.plain_text
     catch e
       @status_bar.text "Line #{e.location.start.line}: #{e.message}"
       @status_bar.classed 'error', true
