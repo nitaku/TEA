@@ -105,17 +105,53 @@ Editor = Backbone.D3View.extend
       .attr
         title: 'Insert a new block for RDF triples.'
 
-    bar.append 'button'
+    # Dropdown button
+    dropdown = bar.append 'span'
+      .attr
+        class: 'dropdown_button'
+
+    dropdown_buttons = dropdown.append 'div'
+    dropdown_buttons.append 'button'
       .text 'triple'
       .on 'click', () =>
-        @editor.replaceSelection 'subj pred obj' # FIXME support more than one selection
+        @editor.replaceSelection "subj pred obj" # FIXME support more than one selection
         pos = @editor.getCursor()
-        @editor.setSelection {line: pos.line, ch: 1}, {line: pos.line, ch: 5}
+        @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
         @editor.focus()
       .style
         color: '#555'
       .attr
         title: 'Insert a new RDF triple.\nUse it within a +++ block.'
+    dropdown_buttons.append 'button'
+      .html '&blacktriangledown;'
+      .on 'click', () =>
+        if d3.select('.Editor .dropdown_button .items').style('display') is 'none' then d3.select('.Editor .dropdown_button .items').style('display', 'inline') else d3.select('.Editor .dropdown_button .items').style('display', 'none')
+      .style
+        color: '#555'
+
+    predicates = {
+      is: 'its:taIdentRef',
+      type: 'its:taClassRef',
+      page: 'foaf:page',
+      comment: 'rdfs:comment'
+    }
+
+    items = dropdown.append 'div'
+      .attr
+        class: 'items'
+      .selectAll '.item'
+        .data Object.keys(predicates)
+    items.enter().append 'div'
+      .attr
+        class: 'item'
+      .text (d) -> d
+      .on 'click', (d) =>
+        @editor.replaceSelection "subj #{d} obj" # FIXME support more than one selection
+        pos = @editor.getCursor()
+        @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
+        @editor.focus()
+
+        d3.select('.Editor .dropdown_button .items').style('display', 'none')
 
     bar.append 'div'
       .attr
