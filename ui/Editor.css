@@ -22,6 +22,45 @@
   font-size: 12px;
   margin-right: 4px;
 }
+
+.Editor .dropdown_button {
+  display: flex;
+  flex-direction: column;
+}
+.Editor .dropdown_button button {
+  min-width: 38px;
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 4px;
+}
+.Editor .dropdown_button button:nth-child(2) {
+  margin-left: -1px;
+  font-size: 11.5px;
+}
+.Editor .dropdown_button .items {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  width: 72px;
+  margin-top: -1px;
+  background: rgb(247,247,247);
+  border: 1px solid rgb(175,175,175);
+  color: rgb(85, 85, 85);
+  padding: 0px;
+}
+.Editor .dropdown_button .item {
+  padding: 4px;
+  border-bottom: 1px solid #aaa;
+  cursor: pointer;
+}
+.Editor .dropdown_button .item:hover {
+  background: rgb(235,235,235);
+}
+.Editor .dropdown_button .item:not(:last-child) {
+  border-bottom: 1px solid #aaa;
+}
+
 .Editor .bar .spacer {
   flex-grow: 1;
 }
