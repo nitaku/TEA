@@ -58,8 +58,10 @@ ImageView = Backbone.D3View.extend
 
     @selected_image = if typeof image_index is 'object' then 0 else image_index
 
+    data = if images_data.length is 0 then [] else [images_data[@selected_image]]
+
     images = @d3el.select('.zoomable').selectAll 'image'
-      .data [images_data[@selected_image]]
+      .data data
 
     images.enter().append 'image'
 
