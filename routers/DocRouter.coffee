@@ -11,8 +11,12 @@ DocRouter = Backbone.Router.extend
     d3.select('#editor').selectAll '*'
       .remove()
 
-    # destroy the old graph view
+    # destroy the old annotation view
     d3.select('#annotation_view').selectAll '*'
+      .remove()
+
+    # destroy the old graph view
+    d3.select('#image_view').selectAll '*'
       .remove()
 
     doc = new Document
