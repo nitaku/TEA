@@ -188,7 +188,11 @@ Editor = Backbone.D3View.extend
         {regex: new RegExp('<<'), token: 'span_open'},
         {regex: new RegExp('>[a-zA-Z0-9][_a-zA-Z0-9]*>'), token: 'span_close'},
         {regex: new RegExp('>>'), token: 'span_close'},
-        {regex: new RegExp('^\\+\\+\\+$'), token: 'triple_section_open', next: 'triple_section'}
+        {regex: new RegExp('^\\+\\+\\+$'), token: 'triple_section_open', next: 'triple_section'},
+        {regex: new RegExp('\\[\.\.\.\\]'), token: 'gap'},
+        {regex: new RegExp('\\[…\\]'), token: 'gap'},
+        {regex: new RegExp('(\\[)([^\\]]+)(\\])'), token: ['editor_addition_delimiter','editor_addition','editor_addition_delimiter']},
+        {regex: new RegExp('(\\{)([^\\}]+)(\\})'), token: ['author_addition_delimiter','author_addition','author_addition_delimiter']}
       ],
       triple_section: [
         {regex: new RegExp('^\\+\\+\\+$'), token: 'triple_section_close', next: 'start'},

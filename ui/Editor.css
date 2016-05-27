@@ -106,7 +106,7 @@
 }
 
 .Editor .span {
-  background: rgba(31,118,180,0.085);
+  background: rgba(31,118,180,0.1);
 }
 .Editor .angle_bracket {
   font-weight: bold;
@@ -168,4 +168,11 @@
 }
 .Editor .cm-literal {
   font-family: sans-serif;
+}
+.Editor .cm-gap, .Editor .cm-editor_addition_delimiter, .Editor .cm-author_addition_delimiter {
+  color: rgb(183, 58, 58);
+  font-weight: bold;
+}
+.Editor .cm-editor_addition {
+  color: #777;
 }
