@@ -194,8 +194,10 @@ Editor = Backbone.D3View.extend
         {regex: new RegExp('^\\+\\+\\+$'), token: 'triple_section_open', next: 'triple_section'},
         {regex: new RegExp('\\[\.\.\.\\]'), token: 'gap'},
         {regex: new RegExp('\\[…\\]'), token: 'gap'},
-        {regex: new RegExp('(\\[)([^\\]]+)(\\])'), token: ['editor_addition_delimiter','editor_addition','editor_addition_delimiter']},
-        {regex: new RegExp('(\\{)([^\\}]+)(\\})'), token: ['author_addition_delimiter','author_addition','author_addition_delimiter']},
+        {regex: new RegExp('\\['), token: 'editor_addition_delimiter'},
+        {regex: new RegExp('\\]'), token: 'editor_addition_delimiter'},
+        {regex: new RegExp('\\{'), token: 'author_addition_delimiter'},
+        {regex: new RegExp('\\}'), token: 'author_addition_delimiter'},
         {regex: new RegExp('^(---)(.*)'), token: ['break','break_id']}
       ],
       triple_section: [
@@ -282,6 +284,11 @@ Editor = Backbone.D3View.extend
       if l.text[l.text.length-2...l.text.length] is '*/' and section_type is 'comments'
         @editor.addLineClass line_number, 'background', "#{section_type}_section_close"
         section_type = null
+
+      # break section
+      if l.text[0...3] is '---' and not section_type?
+        @editor.addLineClass line_number, 'background', "break_section"
+        @editor.addLineClass line_number, 'text', "break_section_text"
 
       line_number++
 

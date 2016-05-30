@@ -158,6 +158,9 @@
 .Editor .comments_section, .Editor .comments_section_open, .Editor .comments_section_close {
   background: rgba(97, 191, 80, 0.05);
 }
+.Editor .break_section {
+  background: #DDD;
+}
 .Editor .triples_section_text {
   font-family: monospace;
 }
@@ -165,10 +168,18 @@
   font-family: monospace;
   color: #449444;
 }
-.Editor :not(:first-child) > .triples_section_open, .Editor :not(:first-child) > .comments_section_open {
+.Editor .break_section_text {
+  font-family: monospace;
+  color: rgb(183, 58, 58);
+  font-weight: bold;
+}
+
+.Editor :not(:first-child) > .triples_section_open,
+.Editor :not(:first-child) > .comments_section_open {
   border-top: 1px solid #DDD;
 }
-.Editor :not(:last-child) > .triples_section_close, .Editor :not(:last-child) > .comments_section_close {
+.Editor :not(:last-child) > .triples_section_close,
+.Editor :not(:last-child) > .comments_section_close {
   border-bottom: 1px solid #DDD;
 }
 
@@ -181,16 +192,4 @@
 .Editor .cm-gap, .Editor .cm-editor_addition_delimiter, .Editor .cm-author_addition_delimiter {
   color: rgb(183, 58, 58);
   font-weight: bold;
-}
-.Editor .cm-editor_addition {
-  color: #777;
-}
-.Editor .cm-break {
-  color: rgb(183, 58, 58);
-  font-family: monospace;
-  font-weight: bold;
-}
-.Editor .cm-break_id {
-  color: rgb(183, 58, 58);
-  font-family: monospace;
 }
