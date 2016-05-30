@@ -2,9 +2,6 @@ Editor = Backbone.D3View.extend
   namespace: null
   tagName: 'div'
 
-  events:
-    input: 'compile'
-
   initialize: (conf) ->
     @d3el.classed 'Editor', true
     @save = _.throttle (() =>
@@ -51,6 +48,7 @@ Editor = Backbone.D3View.extend
       .on 'click', () =>
         @editor.execCommand('undo')
         @editor.focus()
+        @update()
       .style
         color: '#555'
       .attr
@@ -61,6 +59,7 @@ Editor = Backbone.D3View.extend
       .on 'click', () =>
         @editor.execCommand('redo')
         @editor.focus()
+        @update()
       .style
         color: '#555'
       .attr
@@ -88,6 +87,7 @@ Editor = Backbone.D3View.extend
           {anchor: {line: end.line, ch: end.ch+1+end_offset}, head: {line: end.line, ch:  end.ch+3+end_offset}}
         ]
         @editor.focus()
+        @update()
       .style
         color: '#1f77b4'
       .attr
@@ -100,6 +100,7 @@ Editor = Backbone.D3View.extend
         pos = @editor.getCursor()
         @editor.setSelection {line: pos.line-1, ch: 0}, {line: pos.line-1, ch: 15}
         @editor.focus()
+        @update()
       .style
         color: '#555'
       .attr
@@ -118,6 +119,7 @@ Editor = Backbone.D3View.extend
         pos = @editor.getCursor()
         @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
         @editor.focus()
+        @update()
       .style
         color: '#555'
       .attr
@@ -150,6 +152,7 @@ Editor = Backbone.D3View.extend
         pos = @editor.getCursor()
         @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
         @editor.focus()
+        @update()
 
         d3.select('.Editor .dropdown_button .items').style('display', 'none')
 
@@ -206,17 +209,20 @@ Editor = Backbone.D3View.extend
       lineWrapping: true
     }
 
-    # FIXME on dragend is also needed
-    @editor.on 'keyup', () =>
-      @compile()
-
-      @model.set 'code', @editor.getValue()
-      @save()
+    @editor.on 'keyup', (_.throttle (() => @update()), 200, true) # need to be sure to read the new character
+    @editor.on 'drop', () => @update()
 
     # write the code into the editor when is loaded from the server for the first time
     @listenTo @model, 'sync', () =>
       if @model.previous('code') is null
         @editor.setValue @model.attributes.code
+        @update()
+
+  update: () ->
+    @compile()
+
+    @model.set 'code', @editor.getValue()
+    @save()
 
   render: () ->
     @editor.refresh()
