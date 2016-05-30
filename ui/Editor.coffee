@@ -192,7 +192,8 @@ Editor = Backbone.D3View.extend
         {regex: new RegExp('\\[\.\.\.\\]'), token: 'gap'},
         {regex: new RegExp('\\[…\\]'), token: 'gap'},
         {regex: new RegExp('(\\[)([^\\]]+)(\\])'), token: ['editor_addition_delimiter','editor_addition','editor_addition_delimiter']},
-        {regex: new RegExp('(\\{)([^\\}]+)(\\})'), token: ['author_addition_delimiter','author_addition','author_addition_delimiter']}
+        {regex: new RegExp('(\\{)([^\\}]+)(\\})'), token: ['author_addition_delimiter','author_addition','author_addition_delimiter']},
+        {regex: new RegExp('^(---)(.*)'), token: ['break','break_id']}
       ],
       triple_section: [
         {regex: new RegExp('^\\+\\+\\+$'), token: 'triple_section_close', next: 'start'},
@@ -228,7 +229,7 @@ Editor = Backbone.D3View.extend
     @editor.getAllMarks().forEach (mark) ->
       mark.clear()
 
-    @triple_section_highlight()
+    @section_highlight()
 
     try
       data = @parser.parse @editor.getValue()
@@ -244,26 +245,37 @@ Editor = Backbone.D3View.extend
     spans.forEach (s) =>
       @editor.markText {line: s.start_code_location.start.line-1, ch: s.start_code_location.start.column-1}, {line: s.end_code_location.end.line-1, ch: s.end_code_location.end.column-1}, {className: 'span'}
 
-  triple_section_highlight: () ->
-    in_section = false
+  section_highlight: () ->
+    section_type = null
     line_number = 0
 
     @editor.eachLine (l) =>
       @editor.removeLineClass line_number, 'background'
       @editor.removeLineClass line_number, 'text'
 
-      if in_section
-        @editor.addLineClass line_number, 'background', 'triple_section'
-        @editor.addLineClass line_number, 'text', 'triple_section_text'
+      if section_type?
+        @editor.addLineClass line_number, 'background', "#{section_type}_section"
+        @editor.addLineClass line_number, 'text', "#{section_type}_section_text"
 
-      # triple section open
-      if l.text is '+++' and in_section
-        in_section = not in_section
-        @editor.addLineClass line_number, 'background', 'triple_section_close'
-      # triple section close
-      else if l.text is '+++'
-        in_section = not in_section
-        @editor.addLineClass line_number, 'background', 'triple_section_open'
+      # triples section close
+      if l.text is '+++' and section_type is 'triples'
+        @editor.addLineClass line_number, 'background', "#{section_type}_section_close"
+        section_type = null
+      # triples section open
+      else if l.text is '+++' and not section_type?
+        section_type = 'triples'
+        @editor.addLineClass line_number, 'background', "#{section_type}_section_open"
+        @editor.addLineClass line_number, 'text', "#{section_type}_section_text"
+
+      # comments section open
+      if l.text[0...2] is '/*' and not section_type?
+        section_type = 'comments'
+        @editor.addLineClass line_number, 'background', "#{section_type}_section_open"
+        @editor.addLineClass line_number, 'text', "#{section_type}_section_text"
+      # comments section close
+      if l.text[l.text.length-2...l.text.length] is '*/' and section_type is 'comments'
+        @editor.addLineClass line_number, 'background', "#{section_type}_section_close"
+        section_type = null
 
       line_number++
 
