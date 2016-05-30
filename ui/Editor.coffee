@@ -66,6 +66,62 @@ Editor = Backbone.D3View.extend
         title: 'Redo the last change.'
 
     bar.append 'button'
+      .text '/* */'
+      .on 'click', () =>
+        @editor.replaceSelection '/* comment */' # FIXME support more than one selection
+        pos = @editor.getCursor()
+        @editor.focus()
+        @update()
+        @editor.setSelection {line: pos.line, ch: 3}, {line: pos.line, ch: 10}
+      .style
+        color: '#449444'
+      .attr
+        title: 'COMMENT\nInsert a new comment block.\nThe content of a comment block is not intepreted as text nor as annotations.'
+
+    bar.append 'button'
+      .text '---'
+      .on 'click', () =>
+        @editor.replaceSelection '--- id' # FIXME support more than one selection
+        pos = @editor.getCursor()
+        @editor.focus()
+        @update()
+        @editor.setSelection {line: pos.line, ch: 4}, {line: pos.line, ch: 6}
+      .style
+        color: 'rgb(183, 58, 58)'
+      .attr
+        title: 'BREAK\nInsert a symbol marking the beginning of a new section of text (e.g, a page).\nA break can be given an ID to be used in RDF triples, to annotate the corresponding text section.'
+
+    bar.append 'button'
+      .text '{ }'
+      .on 'click', () =>
+        selection = @editor.getSelection()
+        sels = @editor.listSelections() # FIXME support more than one selection
+
+        @editor.replaceSelection '{' + selection + '}' # FIXME support more than one selection
+
+        @editor.focus()
+        @update()
+      .style
+        color: 'rgb(183, 58, 58)'
+      .attr
+        title: 'AUTHOR\'S ADDITION\nInsert a new author\'s addition, or mark the selected text as an author\'s addition.'
+
+    bar.append 'button'
+      .text '[ ]'
+      .on 'click', () =>
+        selection = @editor.getSelection()
+        sels = @editor.listSelections() # FIXME support more than one selection
+
+        @editor.replaceSelection '[' + selection + ']' # FIXME support more than one selection
+
+        @editor.focus()
+        @update()
+      .style
+        color: 'rgb(183, 58, 58)'
+      .attr
+        title: 'EDITOR\'S ADDITION\nInsert a new editor\'s addition, or mark the selected text as an editor\'s addition.'
+
+    bar.append 'button'
       .text '<< >>'
       .on 'click', () =>
         selection = @editor.getSelection()
@@ -82,29 +138,29 @@ Editor = Backbone.D3View.extend
 
         end_offset = if start.line is end.line then 4 else 0
 
+        @editor.focus()
+        @update()
         @editor.setSelections [
           {anchor: {line: start.line, ch: start.ch+1}, head: {line: start.line, ch:  start.ch+3}},
           {anchor: {line: end.line, ch: end.ch+1+end_offset}, head: {line: end.line, ch:  end.ch+3+end_offset}}
         ]
-        @editor.focus()
-        @update()
       .style
         color: '#1f77b4'
       .attr
-        title: 'Insert a new span, or transform the selected text into a span.'
+        title: 'SPAN\nInsert a new span, or transform the selected text into a span.\nA span can be given an ID to be used in RDF triples, to annotate the corresponding text portion.'
 
     bar.append 'button'
       .text '+++'
       .on 'click', () =>
         @editor.replaceSelection '+++\nsubj pred obj\n+++' # FIXME support more than one selection
         pos = @editor.getCursor()
-        @editor.setSelection {line: pos.line-1, ch: 0}, {line: pos.line-1, ch: 15}
         @editor.focus()
         @update()
+        @editor.setSelection {line: pos.line-1, ch: 0}, {line: pos.line-1, ch: 15}
       .style
         color: '#555'
       .attr
-        title: 'Insert a new block for RDF triples.'
+        title: 'RDF TRIPLES BLOCK\nInsert a new block for RDF triples.'
 
     # Dropdown button
     dropdown = bar.append 'span'
@@ -117,13 +173,13 @@ Editor = Backbone.D3View.extend
       .on 'click', () =>
         @editor.replaceSelection "subj pred obj" # FIXME support more than one selection
         pos = @editor.getCursor()
-        @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
         @editor.focus()
         @update()
+        @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
       .style
         color: '#555'
       .attr
-        title: 'Insert a new RDF triple.\nUse it within a +++ block.'
+        title: 'RDF TRIPLE\nInsert a new RDF triple.\nUse it within a +++ block.'
     dropdown_buttons.append 'button'
       .html '&blacktriangledown;'
       .on 'click', () =>
@@ -150,9 +206,9 @@ Editor = Backbone.D3View.extend
       .on 'click', (d) =>
         @editor.replaceSelection "subj #{d} obj" # FIXME support more than one selection
         pos = @editor.getCursor()
-        @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
         @editor.focus()
         @update()
+        @editor.setSelection {line: pos.line, ch: 0}, {line: pos.line, ch: 4}
 
         d3.select('.Editor .dropdown_button .items').style('display', 'none')
 
